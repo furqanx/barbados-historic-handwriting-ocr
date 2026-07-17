@@ -7,14 +7,12 @@ which matches the intended behavior better than averaging per-row errors.
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from typing import Iterable
 
 from jiwer import cer, wer
 
-
-_WHITESPACE_RE = re.compile(r"\s+")
+from src.features.text_normalization import normalize_texts
 
 
 @dataclass(frozen=True)
@@ -34,7 +32,7 @@ class TranscriptionScore:
 def normalize_whitespace(text: str) -> str:
     """Normalize repeated whitespace without changing case or punctuation."""
 
-    return _WHITESPACE_RE.sub(" ", str(text)).strip()
+    return normalize_texts([text])[0]
 
 
 def prepare_texts(texts: Iterable[str], *, normalize: bool = True) -> list[str]:
@@ -42,7 +40,7 @@ def prepare_texts(texts: Iterable[str], *, normalize: bool = True) -> list[str]:
 
     prepared = ["" if text is None else str(text) for text in texts]
     if normalize:
-        prepared = [normalize_whitespace(text) for text in prepared]
+        prepared = normalize_texts(prepared)
     return prepared
 
 
@@ -67,4 +65,3 @@ def score_transcriptions(
         wer=wer(references, predictions),
         cer=cer(references, predictions),
     )
-
