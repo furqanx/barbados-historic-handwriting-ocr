@@ -1,0 +1,97 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/**/*.log
+logs/**/*.txt
+
+# Zindi competition data
+data/raw/*
+data/interim/*
+data/processed/*
+data/features/*
+data/external/*
+data/splits/*
+data/metadata/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/features/.gitkeep
+!data/external/.gitkeep
+!data/splits/.gitkeep
+!data/metadata/.gitkeep
+
+# Downloaded archives and large data files
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.jsonl
+*.h5
+*.hdf5
+
+# Model artifacts
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+*.pkl
+*.joblib
+
+# Outputs
+outputs/checkpoints/*
+outputs/predictions/*
+outputs/submissions/*
+outputs/exports/*
+!outputs/checkpoints/.gitkeep
+!outputs/predictions/.gitkeep
+!outputs/submissions/.gitkeep
+!outputs/exports/.gitkeep
+
+# Reports generated from experiments
+reports/*.html
+reports/*.pdf
+
+# Temporary files
+tmp/
+temp/
+*.tmp
