@@ -97,3 +97,5 @@ temp/
 *.tmp
 
 notes.md
+.agents
+.codex
