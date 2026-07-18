@@ -179,7 +179,7 @@ def train_one_epoch(
                 interpolate_pos_encoding=config.preprocess_mode == "aspect",
                 return_dict=False,
             )
-            loss = outputs[0]
+            loss = outputs[0].mean()
 
         scaler.scale(loss).backward()
         scaler.unscale_(optimizer)
@@ -235,7 +235,7 @@ def validate_one_epoch(
         image_ids.extend(batch.image_ids)
 
         batch_size = pixel_values.shape[0]
-        total_loss += float(outputs[0].detach().cpu()) * batch_size
+        total_loss += float(outputs[0].mean().detach().cpu()) * batch_size
         total_items += batch_size
 
     score = score_transcriptions(references, predictions)
