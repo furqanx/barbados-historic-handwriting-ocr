@@ -14,20 +14,31 @@ from src.data.char_tokenizer import CharacterTokenizer
 from src.data.ctc_dataset import CTCCollate, CTCLineDataset, make_ctc_image_transform
 from src.inference.ctc_decoder import greedy_decode_batch
 from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
+from src.models.resnet_ctc import ResNetCTCConfig, ResNetCTCModel
+
+
+CTCPredictModel = CRNNCTCModel | ResNetCTCModel
 
 
 def load_crnn_ctc_checkpoint(
     checkpoint_path: str | Path,
     *,
     device: torch.device | None = None,
-) -> tuple[CRNNCTCModel, CharacterTokenizer, dict]:
-    """Load a CRNN-CTC checkpoint and tokenizer metadata."""
+) -> tuple[CTCPredictModel, CharacterTokenizer, dict]:
+    """Load a CRNN/ResNet CTC checkpoint and tokenizer metadata."""
 
     device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(checkpoint_path, map_location=device)
     tokenizer = CharacterTokenizer.from_dict(checkpoint["tokenizer"])
-    model_config = CRNNCTCConfig(**checkpoint["model_config"])
-    model = CRNNCTCModel(model_config)
+    model_type = checkpoint.get("model_type", "crnn_ctc")
+    if model_type == "crnn_ctc":
+        model_config = CRNNCTCConfig(**checkpoint["model_config"])
+        model = CRNNCTCModel(model_config)
+    elif model_type == "resnet_ctc":
+        model_config = ResNetCTCConfig(**checkpoint["model_config"])
+        model = ResNetCTCModel(model_config)
+    else:
+        raise ValueError(f"Unsupported CTC checkpoint model_type: {model_type}")
     model.load_state_dict(checkpoint["model_state_dict"])
     model.to(device)
     model.eval()
@@ -36,7 +47,7 @@ def load_crnn_ctc_checkpoint(
 
 @torch.no_grad()
 def predict_manifest(
-    model: CRNNCTCModel,
+    model: CTCPredictModel,
     tokenizer: CharacterTokenizer,
     manifest: pd.DataFrame,
     *,

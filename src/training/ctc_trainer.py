@@ -19,6 +19,11 @@ from src.data.ctc_dataset import CTCCollate, CTCLineDataset, make_ctc_image_tran
 from src.evaluation.metrics import TranscriptionScore, score_transcriptions
 from src.inference.ctc_decoder import greedy_decode_batch
 from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
+from src.models.resnet_ctc import ResNetCTCConfig, ResNetCTCModel
+
+
+CTCModel = CRNNCTCModel | ResNetCTCModel
+CTCModelConfig = CRNNCTCConfig | ResNetCTCConfig
 
 
 @dataclass(frozen=True)
@@ -72,6 +77,8 @@ def build_dataloaders(
     train_manifest: pd.DataFrame,
     tokenizer: CharacterTokenizer,
     config: CTCTrainingConfig,
+    *,
+    time_downsample_factor: int = CRNNCTCModel.time_downsample_factor,
 ) -> tuple[DataLoader, DataLoader]:
     """Create train/validation dataloaders for one fold."""
 
@@ -88,7 +95,7 @@ def build_dataloaders(
     collate = CTCCollate(
         pad_value=config.pad_value,
         width_multiple=config.width_multiple,
-        time_downsample_factor=CRNNCTCModel.time_downsample_factor,
+        time_downsample_factor=time_downsample_factor,
     )
 
     train_loader = DataLoader(
@@ -111,7 +118,7 @@ def build_dataloaders(
 
 
 def train_one_epoch(
-    model: CRNNCTCModel,
+    model: CTCModel,
     loader: DataLoader,
     criterion: nn.CTCLoss,
     optimizer: torch.optim.Optimizer,
@@ -154,7 +161,7 @@ def train_one_epoch(
 
 @torch.no_grad()
 def validate_one_epoch(
-    model: CRNNCTCModel,
+    model: CTCModel,
     loader: DataLoader,
     criterion: nn.CTCLoss,
     tokenizer: CharacterTokenizer,
@@ -211,9 +218,10 @@ def validate_one_epoch(
 def save_checkpoint(
     path: str | Path,
     *,
-    model: CRNNCTCModel,
+    model: CTCModel,
     tokenizer: CharacterTokenizer,
-    model_config: CRNNCTCConfig,
+    model_config: CTCModelConfig,
+    model_type: str,
     training_config: CTCTrainingConfig,
     epoch: int,
     valid_metrics: EpochMetrics,
@@ -225,6 +233,7 @@ def save_checkpoint(
     torch.save(
         {
             "epoch": epoch,
+            "model_type": model_type,
             "model_state_dict": model.state_dict(),
             "model_config": model_config.to_dict(),
             "training_config": asdict(training_config),
@@ -245,22 +254,29 @@ def save_predictions(predictions: pd.DataFrame, path: str | Path) -> Path:
     return output
 
 
-def train_crnn_ctc(
+def train_ctc_model(
     train_manifest: pd.DataFrame,
     tokenizer: CharacterTokenizer,
     *,
+    model: CTCModel,
+    model_config: CTCModelConfig,
+    model_type: str,
     config: CTCTrainingConfig,
     checkpoint_path: str | Path,
     valid_predictions_path: str | Path | None = None,
     device: torch.device | None = None,
-) -> tuple[CRNNCTCModel, TranscriptionScore | None]:
-    """Train CRNN-CTC on one fold and save the best checkpoint."""
+) -> tuple[CTCModel, TranscriptionScore | None]:
+    """Train a CTC OCR model on one fold and save the best checkpoint."""
 
     set_seed(config.seed)
     device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model_config = CRNNCTCConfig(vocab_size=tokenizer.vocab_size)
-    model = CRNNCTCModel(model_config).to(device)
-    train_loader, valid_loader = build_dataloaders(train_manifest, tokenizer, config)
+    model = model.to(device)
+    train_loader, valid_loader = build_dataloaders(
+        train_manifest,
+        tokenizer,
+        config,
+        time_downsample_factor=model.time_downsample_factor,
+    )
 
     criterion = nn.CTCLoss(blank=tokenizer.blank_id, zero_infinity=True)
     optimizer = torch.optim.AdamW(
@@ -314,6 +330,7 @@ def train_crnn_ctc(
                 model=model,
                 tokenizer=tokenizer,
                 model_config=model_config,
+                model_type=model_type,
                 training_config=config,
                 epoch=epoch,
                 valid_metrics=valid_metrics,
@@ -327,3 +344,65 @@ def train_crnn_ctc(
                 print(f"saved_best_valid_predictions={saved_predictions}")
 
     return model, best_transcription_score
+
+
+def train_crnn_ctc(
+    train_manifest: pd.DataFrame,
+    tokenizer: CharacterTokenizer,
+    *,
+    config: CTCTrainingConfig,
+    checkpoint_path: str | Path,
+    valid_predictions_path: str | Path | None = None,
+    device: torch.device | None = None,
+) -> tuple[CRNNCTCModel, TranscriptionScore | None]:
+    """Train CRNN-CTC on one fold and save the best checkpoint."""
+
+    model_config = CRNNCTCConfig(vocab_size=tokenizer.vocab_size)
+    model = CRNNCTCModel(model_config)
+    return train_ctc_model(
+        train_manifest,
+        tokenizer,
+        model=model,
+        model_config=model_config,
+        model_type="crnn_ctc",
+        config=config,
+        checkpoint_path=checkpoint_path,
+        valid_predictions_path=valid_predictions_path,
+        device=device,
+    )
+
+
+def train_resnet_ctc(
+    train_manifest: pd.DataFrame,
+    tokenizer: CharacterTokenizer,
+    *,
+    config: CTCTrainingConfig,
+    checkpoint_path: str | Path,
+    valid_predictions_path: str | Path | None = None,
+    device: torch.device | None = None,
+    base_channels: int = 64,
+    rnn_hidden_size: int = 256,
+    rnn_layers: int = 2,
+    dropout: float = 0.1,
+) -> tuple[ResNetCTCModel, TranscriptionScore | None]:
+    """Train ResNet-CTC on one fold and save the best checkpoint."""
+
+    model_config = ResNetCTCConfig(
+        vocab_size=tokenizer.vocab_size,
+        base_channels=base_channels,
+        rnn_hidden_size=rnn_hidden_size,
+        rnn_layers=rnn_layers,
+        dropout=dropout,
+    )
+    model = ResNetCTCModel(model_config)
+    return train_ctc_model(
+        train_manifest,
+        tokenizer,
+        model=model,
+        model_config=model_config,
+        model_type="resnet_ctc",
+        config=config,
+        checkpoint_path=checkpoint_path,
+        valid_predictions_path=valid_predictions_path,
+        device=device,
+    )

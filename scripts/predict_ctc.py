@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--test-manifest", type=Path, default=TEST_MANIFEST)
     parser.add_argument("--sample-submission", type=Path, default=SAMPLE_SUBMISSION_CSV)
     parser.add_argument("--output-dir", type=Path, default=OUTPUTS_DIR)
-    parser.add_argument("--run-name", default="crnn_ctc")
+    parser.add_argument("--run-name", default="ctc")
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--predictions-output", type=Path, default=None)
     parser.add_argument("--batch-size", type=int, default=None)

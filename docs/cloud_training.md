@@ -144,6 +144,46 @@ python scripts/predict_trocr.py \
   --device cuda
 ```
 
+## ResNet-CTC experiment
+
+This is a stronger CTC visual encoder than the first custom CRNN baseline, while
+keeping the same character vocabulary, folds, CTC loss, and greedy decoder.
+
+```bash
+python scripts/train_resnet_ctc.py \
+  --run-name resnet_ctc_h96_w2048_fold0 \
+  --fold 0 \
+  --epochs 30 \
+  --batch-size 12 \
+  --target-height 96 \
+  --max-width 2048 \
+  --lr 7e-4 \
+  --device cuda
+```
+
+```bash
+python scripts/predict_ctc.py \
+  --run-name resnet_ctc_h96_w2048_fold0 \
+  --checkpoint outputs/checkpoints/resnet_ctc_h96_w2048_fold0_best.pt \
+  --device cuda
+```
+
+## Ensemble CRNN + TrOCR
+
+First create test predictions from each trained model. Then combine them.
+
+```bash
+python scripts/ensemble_predictions.py \
+  --run-name ensemble_crnn_trocr_fold0 \
+  --prediction crnn:outputs/predictions/crnn_ctc_h96_w2048_fold0_test.csv \
+  --prediction trocr:outputs/predictions/trocr_small_default_fold0_test.csv \
+  --priority trocr crnn \
+  --sample-submission /path/to/SampleSubmission.csv
+```
+
+For validation predictions, use the `*_valid_best.csv` files instead. The
+script will also save WER/CER/score when a `reference` column exists.
+
 ## Kaggle path example
 
 Kaggle input paths usually look like this:
