@@ -117,7 +117,7 @@ def train_one_epoch(
     optimizer: torch.optim.Optimizer,
     *,
     device: torch.device,
-    scaler: torch.cuda.amp.GradScaler,
+    scaler: torch.amp.GradScaler,
     gradient_clip_norm: float,
 ) -> EpochMetrics:
     """Run one training epoch."""
@@ -133,7 +133,7 @@ def train_one_epoch(
         input_lengths = batch.input_lengths.to(device, non_blocking=True)
 
         optimizer.zero_grad(set_to_none=True)
-        with torch.cuda.amp.autocast(enabled=scaler.is_enabled()):
+        with torch.amp.autocast(device_type=device.type, enabled=scaler.is_enabled()):
             logits = model(images)
             log_probs = logits.log_softmax(dim=-1)
             input_lengths = input_lengths.clamp(max=logits.shape[0])
@@ -268,7 +268,8 @@ def train_crnn_ctc(
         lr=config.learning_rate,
         weight_decay=config.weight_decay,
     )
-    scaler = torch.cuda.amp.GradScaler(
+    scaler = torch.amp.GradScaler(
+        device.type,
         enabled=config.use_amp and device.type == "cuda"
     )
 
