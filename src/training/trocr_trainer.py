@@ -93,7 +93,7 @@ def prepare_trocr_model_and_processor(
 ) -> tuple[VisionEncoderDecoderModel, TrOCRProcessor]:
     """Load TrOCR model/processor and apply optional freezing."""
 
-    processor = TrOCRProcessor.from_pretrained(model_name)
+    processor = TrOCRProcessor.from_pretrained(model_name, use_fast=False)
     model = VisionEncoderDecoderModel.from_pretrained(model_name)
     _configure_generation_tokens(model, processor)
     _apply_freezing(

@@ -29,7 +29,7 @@ def load_trocr_checkpoint(
 
     device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint_dir = Path(checkpoint_dir)
-    processor = TrOCRProcessor.from_pretrained(checkpoint_dir)
+    processor = TrOCRProcessor.from_pretrained(checkpoint_dir, use_fast=False)
     model = VisionEncoderDecoderModel.from_pretrained(checkpoint_dir)
     metadata_path = checkpoint_dir / "training_metadata.json"
     metadata = {}
