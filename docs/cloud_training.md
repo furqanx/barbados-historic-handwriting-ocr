@@ -34,6 +34,7 @@ Supported training scripts:
 ```text
 scripts/train_crnn_ctc.py
 scripts/train_resnet_ctc.py
+scripts/train_convnext_ctc.py
 scripts/train_trocr.py
 ```
 
@@ -196,6 +197,30 @@ python scripts/train_resnet_ctc.py \
 python scripts/predict_ctc.py \
   --run-name resnet_ctc_h96_w2048_fold0 \
   --checkpoint outputs/checkpoints/resnet_ctc_h96_w2048_fold0_best.pt \
+  --device cuda
+```
+
+## ConvNeXt-CTC experiment
+
+This uses a `timm` ConvNeXt-tiny encoder with ImageNet initialization, followed
+by the same BiLSTM, CTC loss, character vocabulary, and greedy CTC decoder.
+
+```bash
+python scripts/train_convnext_ctc.py \
+  --run-name convnext_ctc_h96_w2048_fold0 \
+  --fold 0 \
+  --epochs 20 \
+  --batch-size 8 \
+  --target-height 96 \
+  --max-width 2048 \
+  --lr 3e-4 \
+  --device cuda
+```
+
+```bash
+python scripts/predict_ctc.py \
+  --run-name convnext_ctc_h96_w2048_fold0 \
+  --checkpoint outputs/checkpoints/convnext_ctc_h96_w2048_fold0_best.pt \
   --device cuda
 ```
 

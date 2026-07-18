@@ -19,13 +19,14 @@ from src.data.ctc_dataset import CTCCollate, CTCLineDataset, make_ctc_image_tran
 from src.evaluation.metrics import TranscriptionScore, score_transcriptions
 from src.inference.ctc_decoder import greedy_decode_batch
 from src.models.ctc_parallel import ctc_logits_to_time_first, maybe_wrap_ctc_data_parallel
+from src.models.convnext_ctc import ConvNeXtCTCConfig, ConvNeXtCTCModel
 from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
 from src.models.resnet_ctc import ResNetCTCConfig, ResNetCTCModel
 from src.utils.torch_utils import unwrap_model
 
 
-CTCModel = CRNNCTCModel | ResNetCTCModel
-CTCModelConfig = CRNNCTCConfig | ResNetCTCConfig
+CTCModel = CRNNCTCModel | ResNetCTCModel | ConvNeXtCTCModel
+CTCModelConfig = CRNNCTCConfig | ResNetCTCConfig | ConvNeXtCTCConfig
 
 
 @dataclass(frozen=True)
@@ -412,6 +413,48 @@ def train_resnet_ctc(
         model=model,
         model_config=model_config,
         model_type="resnet_ctc",
+        config=config,
+        checkpoint_path=checkpoint_path,
+        valid_predictions_path=valid_predictions_path,
+        device=device,
+    )
+
+
+def train_convnext_ctc(
+    train_manifest: pd.DataFrame,
+    tokenizer: CharacterTokenizer,
+    *,
+    config: CTCTrainingConfig,
+    checkpoint_path: str | Path,
+    valid_predictions_path: str | Path | None = None,
+    device: torch.device | None = None,
+    backbone_name: str = "convnext_tiny",
+    pretrained: bool = True,
+    out_index: int = 0,
+    rnn_hidden_size: int = 256,
+    rnn_layers: int = 2,
+    dropout: float = 0.1,
+    normalize_images: bool = True,
+) -> tuple[ConvNeXtCTCModel, TranscriptionScore | None]:
+    """Train ConvNeXt-CTC on one fold and save the best checkpoint."""
+
+    model_config = ConvNeXtCTCConfig(
+        vocab_size=tokenizer.vocab_size,
+        backbone_name=backbone_name,
+        pretrained=pretrained,
+        out_index=out_index,
+        rnn_hidden_size=rnn_hidden_size,
+        rnn_layers=rnn_layers,
+        dropout=dropout,
+        normalize_images=normalize_images,
+    )
+    model = ConvNeXtCTCModel(model_config)
+    return train_ctc_model(
+        train_manifest,
+        tokenizer,
+        model=model,
+        model_config=model_config,
+        model_type="convnext_ctc",
         config=config,
         checkpoint_path=checkpoint_path,
         valid_predictions_path=valid_predictions_path,

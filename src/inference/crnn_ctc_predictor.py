@@ -14,12 +14,13 @@ from src.data.char_tokenizer import CharacterTokenizer
 from src.data.ctc_dataset import CTCCollate, CTCLineDataset, make_ctc_image_transform
 from src.inference.ctc_decoder import greedy_decode_batch
 from src.models.ctc_parallel import ctc_logits_to_time_first, maybe_wrap_ctc_data_parallel
+from src.models.convnext_ctc import ConvNeXtCTCConfig, ConvNeXtCTCModel
 from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
 from src.models.resnet_ctc import ResNetCTCConfig, ResNetCTCModel
 from src.utils.torch_utils import unwrap_model
 
 
-CTCPredictModel = CRNNCTCModel | ResNetCTCModel
+CTCPredictModel = CRNNCTCModel | ResNetCTCModel | ConvNeXtCTCModel
 
 
 def load_crnn_ctc_checkpoint(
@@ -39,6 +40,11 @@ def load_crnn_ctc_checkpoint(
     elif model_type == "resnet_ctc":
         model_config = ResNetCTCConfig(**checkpoint["model_config"])
         model = ResNetCTCModel(model_config)
+    elif model_type == "convnext_ctc":
+        config_payload = dict(checkpoint["model_config"])
+        config_payload["pretrained"] = False
+        model_config = ConvNeXtCTCConfig(**config_payload)
+        model = ConvNeXtCTCModel(model_config)
     else:
         raise ValueError(f"Unsupported CTC checkpoint model_type: {model_type}")
     model.load_state_dict(checkpoint["model_state_dict"])

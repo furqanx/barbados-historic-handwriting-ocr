@@ -4,6 +4,7 @@ matplotlib
 pillow
 jiwer
 scikit-learn
+timm
 tqdm
 transformers
 accelerate
