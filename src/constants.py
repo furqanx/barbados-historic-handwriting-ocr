@@ -32,6 +32,7 @@ SUBMISSIONS_DIR = OUTPUTS_DIR / "submissions"
 
 TRAIN_MANIFEST = METADATA_DIR / "train_manifest.csv"
 TEST_MANIFEST = METADATA_DIR / "test_manifest.csv"
+CHAR_VOCAB_JSON = METADATA_DIR / "char_vocab.json"
 
 ID_COL = "ID"
 TARGET_COL = "Target"

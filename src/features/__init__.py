@@ -1,6 +1,8 @@
 """Feature engineering helpers."""
 
 from src.features.image_preprocessing import (
+    ResizeKeepAspectConfig,
+    ResizeKeepAspectTransform,
     ResizePadConfig,
     ResizePadTransform,
     autocontrast,
@@ -16,6 +18,8 @@ from src.features.text_normalization import (
 
 __all__ = [
     "PRESERVE_TEXT_NORMALIZER",
+    "ResizeKeepAspectConfig",
+    "ResizeKeepAspectTransform",
     "ResizePadConfig",
     "ResizePadTransform",
     "TextNormalizer",

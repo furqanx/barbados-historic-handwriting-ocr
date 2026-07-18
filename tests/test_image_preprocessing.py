@@ -2,6 +2,8 @@ import pytest
 from PIL import Image
 
 from src.features.image_preprocessing import (
+    ResizeKeepAspectConfig,
+    ResizeKeepAspectTransform,
     ResizePadConfig,
     ResizePadTransform,
     pad_to_width,
@@ -39,6 +41,17 @@ def test_resize_pad_transform_returns_configured_shape() -> None:
     image = Image.new("RGB", (200, 50), color="white")
     transform = ResizePadTransform(
         ResizePadConfig(target_height=64, max_width=256, pad_value=255)
+    )
+
+    transformed = transform(image)
+
+    assert transformed.size == (256, 64)
+
+
+def test_resize_keep_aspect_transform_keeps_dynamic_width() -> None:
+    image = Image.new("RGB", (200, 50), color="white")
+    transform = ResizeKeepAspectTransform(
+        ResizeKeepAspectConfig(target_height=64, max_width=None)
     )
 
     transformed = transform(image)

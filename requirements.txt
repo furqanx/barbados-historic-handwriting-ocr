@@ -4,3 +4,6 @@ matplotlib
 pillow
 jiwer
 scikit-learn
+torch
+torchvision
+tqdm

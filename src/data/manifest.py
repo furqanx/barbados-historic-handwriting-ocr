@@ -155,12 +155,19 @@ def add_folds(
 def build_manifests(
     *,
     image_dir: Path = IMAGE_DIR,
+    train_path: Path = TRAIN_CSV,
+    test_path: Path = TEST_CSV,
+    sample_submission_path: Path = SAMPLE_SUBMISSION_CSV,
     n_folds: int = N_FOLDS,
     seed: int = RANDOM_SEED,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Build train/test manifests with image metadata and train folds."""
 
-    train, test, sample_submission = load_competition_csvs()
+    train, test, sample_submission = load_competition_csvs(
+        train_path=train_path,
+        test_path=test_path,
+        sample_submission_path=sample_submission_path,
+    )
     if set(test[ID_COL].astype(str)) != set(sample_submission[ID_COL].astype(str)):
         raise ValueError("Test IDs and sample submission IDs do not match.")
 

@@ -32,6 +32,24 @@ class ResizePadConfig:
             raise ValueError("align must be one of: left, center, right.")
 
 
+@dataclass(frozen=True)
+class ResizeKeepAspectConfig:
+    """Configuration for dynamic-width line image resizing."""
+
+    target_height: int = 96
+    max_width: int | None = 2048
+    autocontrast_cutoff: int | None = None
+    resample: int = Image.Resampling.BILINEAR
+
+    def __post_init__(self) -> None:
+        if self.target_height <= 0:
+            raise ValueError("target_height must be positive.")
+        if self.max_width is not None and self.max_width <= 0:
+            raise ValueError("max_width must be positive when provided.")
+        if self.autocontrast_cutoff is not None and self.autocontrast_cutoff < 0:
+            raise ValueError("autocontrast_cutoff must be non-negative when provided.")
+
+
 def resize_keep_aspect(
     image: Image.Image,
     *,
@@ -114,6 +132,23 @@ class ResizePadTransform:
             target_width=self.config.max_width,
             pad_value=self.config.pad_value,
             align=self.config.align,
+        )
+
+
+@dataclass(frozen=True)
+class ResizeKeepAspectTransform:
+    """Resize a line image to fixed height and keep dynamic width."""
+
+    config: ResizeKeepAspectConfig = field(default_factory=ResizeKeepAspectConfig)
+
+    def __call__(self, image: Image.Image) -> Image.Image:
+        if self.config.autocontrast_cutoff is not None:
+            image = autocontrast(image, cutoff=self.config.autocontrast_cutoff)
+        return resize_keep_aspect(
+            image,
+            target_height=self.config.target_height,
+            max_width=self.config.max_width,
+            resample=self.config.resample,
         )
 
 
