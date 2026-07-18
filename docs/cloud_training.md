@@ -12,6 +12,18 @@ python -m pip install -r requirements.txt
 On Kaggle/Colab, PyTorch is usually preinstalled. If dependency resolution is
 slow, install only the missing packages.
 
+For Kaggle, avoid reinstalling PyTorch because it can break CUDA package
+compatibility with the preinstalled runtime. Use:
+
+```bash
+python -m pip uninstall -y torchaudio
+python -m pip install -r requirements-kaggle.txt
+```
+
+`torchaudio` is not used by this OCR project. Removing it avoids a known
+`transformers` import failure when PyTorch and TorchAudio are compiled with
+different CUDA versions.
+
 ## Multi-GPU
 
 Training scripts automatically use `torch.nn.DataParallel` when `--device cuda`
