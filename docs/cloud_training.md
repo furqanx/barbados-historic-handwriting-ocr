@@ -72,6 +72,78 @@ outputs/predictions/crnn_ctc_h96_w2048_fold0_test.csv
 outputs/submissions/crnn_ctc_h96_w2048_fold0_submission.csv
 ```
 
+## TrOCR experiments
+
+TrOCR uses the same manifests from step 2.
+
+### Small default
+
+```bash
+python scripts/train_trocr.py \
+  --run-name trocr_small_default_fold0 \
+  --model-name microsoft/trocr-small-handwritten \
+  --preprocess-mode default \
+  --fold 0 \
+  --epochs 10 \
+  --batch-size 4 \
+  --lr 5e-5 \
+  --device cuda
+```
+
+### Small aspect-ratio-aware
+
+```bash
+python scripts/train_trocr.py \
+  --run-name trocr_small_aspect_h384_w1536_fold0 \
+  --model-name microsoft/trocr-small-handwritten \
+  --preprocess-mode aspect \
+  --target-height 384 \
+  --canvas-width 1536 \
+  --fold 0 \
+  --epochs 10 \
+  --batch-size 2 \
+  --lr 3e-5 \
+  --device cuda
+```
+
+### Base with partial freezing
+
+```bash
+python scripts/train_trocr.py \
+  --run-name trocr_base_default_freeze_enc8_fold0 \
+  --model-name microsoft/trocr-base-handwritten \
+  --preprocess-mode default \
+  --freeze-encoder-layers 8 \
+  --fold 0 \
+  --epochs 8 \
+  --batch-size 2 \
+  --lr 2e-5 \
+  --device cuda
+```
+
+### Large
+
+```bash
+python scripts/train_trocr.py \
+  --run-name trocr_large_default_fold0 \
+  --model-name microsoft/trocr-large-handwritten \
+  --preprocess-mode default \
+  --fold 0 \
+  --epochs 5 \
+  --batch-size 1 \
+  --lr 1e-5 \
+  --device cuda
+```
+
+### TrOCR submission
+
+```bash
+python scripts/predict_trocr.py \
+  --run-name trocr_small_default_fold0 \
+  --checkpoint-dir outputs/checkpoints/trocr_small_default_fold0 \
+  --device cuda
+```
+
 ## Kaggle path example
 
 Kaggle input paths usually look like this:
