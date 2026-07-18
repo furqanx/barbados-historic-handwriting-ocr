@@ -12,6 +12,25 @@ python -m pip install -r requirements.txt
 On Kaggle/Colab, PyTorch is usually preinstalled. If dependency resolution is
 slow, install only the missing packages.
 
+## Multi-GPU
+
+Training scripts automatically use `torch.nn.DataParallel` when `--device cuda`
+and more than one CUDA GPU is available, such as Kaggle `GPU T4 x2`.
+
+Supported training scripts:
+
+```text
+scripts/train_crnn_ctc.py
+scripts/train_resnet_ctc.py
+scripts/train_trocr.py
+```
+
+Disable it only if debugging:
+
+```bash
+--no-data-parallel
+```
+
 ## 2. Build manifests
 
 Point these arguments to the dataset paths used by the runtime.

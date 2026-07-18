@@ -33,6 +33,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--predictions-output", type=Path, default=None)
     parser.add_argument("--batch-size", type=int, default=None)
     parser.add_argument("--num-workers", type=int, default=None)
+    parser.add_argument("--no-data-parallel", action="store_true")
     parser.add_argument("--device", default=None, choices=["cpu", "cuda"])
     return parser.parse_args()
 
@@ -61,6 +62,7 @@ def main() -> None:
         autocontrast_cutoff=training_config.get("autocontrast_cutoff"),
         pad_value=float(training_config.get("pad_value", 1.0)),
         width_multiple=int(training_config.get("width_multiple", 4)),
+        use_data_parallel=not args.no_data_parallel,
         device=device,
     )
     predictions_output = args.predictions_output

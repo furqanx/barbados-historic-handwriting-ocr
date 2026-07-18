@@ -18,8 +18,10 @@ from src.data.char_tokenizer import CharacterTokenizer
 from src.data.ctc_dataset import CTCCollate, CTCLineDataset, make_ctc_image_transform
 from src.evaluation.metrics import TranscriptionScore, score_transcriptions
 from src.inference.ctc_decoder import greedy_decode_batch
+from src.models.ctc_parallel import ctc_logits_to_time_first, maybe_wrap_ctc_data_parallel
 from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
 from src.models.resnet_ctc import ResNetCTCConfig, ResNetCTCModel
+from src.utils.torch_utils import unwrap_model
 
 
 CTCModel = CRNNCTCModel | ResNetCTCModel
@@ -43,6 +45,7 @@ class CTCTrainingConfig:
     width_multiple: int = 4
     gradient_clip_norm: float = 5.0
     use_amp: bool = True
+    use_data_parallel: bool = True
     seed: int = 42
 
 
@@ -118,7 +121,7 @@ def build_dataloaders(
 
 
 def train_one_epoch(
-    model: CTCModel,
+    model: nn.Module,
     loader: DataLoader,
     criterion: nn.CTCLoss,
     optimizer: torch.optim.Optimizer,
@@ -142,6 +145,7 @@ def train_one_epoch(
         optimizer.zero_grad(set_to_none=True)
         with torch.amp.autocast(device_type=device.type, enabled=scaler.is_enabled()):
             logits = model(images)
+            logits = ctc_logits_to_time_first(logits, model)
             log_probs = logits.log_softmax(dim=-1)
             input_lengths = input_lengths.clamp(max=logits.shape[0])
             loss = criterion(log_probs, targets, input_lengths, target_lengths)
@@ -161,7 +165,7 @@ def train_one_epoch(
 
 @torch.no_grad()
 def validate_one_epoch(
-    model: CTCModel,
+    model: nn.Module,
     loader: DataLoader,
     criterion: nn.CTCLoss,
     tokenizer: CharacterTokenizer,
@@ -184,6 +188,7 @@ def validate_one_epoch(
         input_lengths = batch.input_lengths.to(device, non_blocking=True)
 
         logits = model(images)
+        logits = ctc_logits_to_time_first(logits, model)
         log_probs = logits.log_softmax(dim=-1)
         input_lengths = input_lengths.clamp(max=logits.shape[0])
         loss = criterion(log_probs, targets, input_lengths, target_lengths)
@@ -218,7 +223,7 @@ def validate_one_epoch(
 def save_checkpoint(
     path: str | Path,
     *,
-    model: CTCModel,
+    model: nn.Module,
     tokenizer: CharacterTokenizer,
     model_config: CTCModelConfig,
     model_type: str,
@@ -234,7 +239,7 @@ def save_checkpoint(
         {
             "epoch": epoch,
             "model_type": model_type,
-            "model_state_dict": model.state_dict(),
+            "model_state_dict": unwrap_model(model).state_dict(),
             "model_config": model_config.to_dict(),
             "training_config": asdict(training_config),
             "tokenizer": tokenizer.to_dict(),
@@ -270,12 +275,18 @@ def train_ctc_model(
 
     set_seed(config.seed)
     device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    time_downsample_factor = model.time_downsample_factor
     model = model.to(device)
+    model = maybe_wrap_ctc_data_parallel(
+        model,
+        device,
+        enabled=config.use_data_parallel,
+    )
     train_loader, valid_loader = build_dataloaders(
         train_manifest,
         tokenizer,
         config,
-        time_downsample_factor=model.time_downsample_factor,
+        time_downsample_factor=time_downsample_factor,
     )
 
     criterion = nn.CTCLoss(blank=tokenizer.blank_id, zero_infinity=True)

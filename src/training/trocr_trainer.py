@@ -23,6 +23,7 @@ from src.data.trocr_dataset import (
     make_trocr_image_transform,
 )
 from src.evaluation.metrics import TranscriptionScore, score_transcriptions
+from src.utils.torch_utils import maybe_wrap_data_parallel, unwrap_model
 
 
 @dataclass(frozen=True)
@@ -44,6 +45,7 @@ class TrOCRTrainingConfig:
     num_beams: int = 1
     gradient_clip_norm: float = 1.0
     use_amp: bool = True
+    use_data_parallel: bool = True
     seed: int = 42
     freeze_encoder: bool = False
     freeze_decoder: bool = False
@@ -151,7 +153,7 @@ def build_dataloaders(
 
 
 def train_one_epoch(
-    model: VisionEncoderDecoderModel,
+    model: nn.Module,
     loader: DataLoader,
     optimizer: torch.optim.Optimizer,
     *,
@@ -175,8 +177,9 @@ def train_one_epoch(
                 pixel_values=pixel_values,
                 labels=labels,
                 interpolate_pos_encoding=config.preprocess_mode == "aspect",
+                return_dict=False,
             )
-            loss = outputs.loss
+            loss = outputs[0]
 
         scaler.scale(loss).backward()
         scaler.unscale_(optimizer)
@@ -193,7 +196,7 @@ def train_one_epoch(
 
 @torch.no_grad()
 def validate_one_epoch(
-    model: VisionEncoderDecoderModel,
+    model: nn.Module,
     processor: TrOCRProcessor,
     loader: DataLoader,
     *,
@@ -216,8 +219,10 @@ def validate_one_epoch(
             pixel_values=pixel_values,
             labels=labels,
             interpolate_pos_encoding=config.preprocess_mode == "aspect",
+            return_dict=False,
         )
-        generated_ids = model.generate(
+        generator = unwrap_model(model)
+        generated_ids = generator.generate(
             pixel_values,
             max_length=config.max_generation_length,
             num_beams=config.num_beams,
@@ -230,7 +235,7 @@ def validate_one_epoch(
         image_ids.extend(batch.image_ids)
 
         batch_size = pixel_values.shape[0]
-        total_loss += float(outputs.loss.detach().cpu()) * batch_size
+        total_loss += float(outputs[0].detach().cpu()) * batch_size
         total_items += batch_size
 
     score = score_transcriptions(references, predictions)
@@ -270,6 +275,11 @@ def train_trocr(
         freeze_decoder=config.freeze_decoder,
         freeze_encoder_layers=config.freeze_encoder_layers,
         freeze_decoder_layers=config.freeze_decoder_layers,
+    )
+    model = maybe_wrap_data_parallel(
+        model,
+        device,
+        enabled=config.use_data_parallel,
     )
     train_loader, valid_loader = build_dataloaders(train_manifest, processor, config)
     optimizer = torch.optim.AdamW(
@@ -349,6 +359,7 @@ def save_trocr_checkpoint(
 
     output = Path(checkpoint_dir)
     output.mkdir(parents=True, exist_ok=True)
+    model = unwrap_model(model)
     model.save_pretrained(output)
     processor.save_pretrained(output)
     metadata = {

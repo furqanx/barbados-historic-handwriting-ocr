@@ -38,6 +38,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-width", type=int, default=2048)
     parser.add_argument("--gradient-clip-norm", type=float, default=5.0)
     parser.add_argument("--no-amp", action="store_true")
+    parser.add_argument("--no-data-parallel", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", default=None, choices=["cpu", "cuda"])
     return parser.parse_args()
@@ -69,6 +70,7 @@ def main() -> None:
         max_width=args.max_width,
         gradient_clip_norm=args.gradient_clip_norm,
         use_amp=not args.no_amp,
+        use_data_parallel=not args.no_data_parallel,
         seed=args.seed,
     )
     device = torch.device(args.device) if args.device else None

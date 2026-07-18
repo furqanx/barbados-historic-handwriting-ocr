@@ -49,6 +49,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num-beams", type=int, default=1)
     parser.add_argument("--gradient-clip-norm", type=float, default=1.0)
     parser.add_argument("--no-amp", action="store_true")
+    parser.add_argument("--no-data-parallel", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--freeze-encoder", action="store_true")
     parser.add_argument("--freeze-decoder", action="store_true")
@@ -88,6 +89,7 @@ def main() -> None:
         num_beams=args.num_beams,
         gradient_clip_norm=args.gradient_clip_norm,
         use_amp=not args.no_amp,
+        use_data_parallel=not args.no_data_parallel,
         seed=args.seed,
         freeze_encoder=args.freeze_encoder,
         freeze_decoder=args.freeze_decoder,

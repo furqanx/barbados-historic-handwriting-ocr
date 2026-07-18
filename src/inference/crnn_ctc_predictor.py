@@ -13,8 +13,10 @@ from src.constants import ID_COL, TARGET_COL
 from src.data.char_tokenizer import CharacterTokenizer
 from src.data.ctc_dataset import CTCCollate, CTCLineDataset, make_ctc_image_transform
 from src.inference.ctc_decoder import greedy_decode_batch
+from src.models.ctc_parallel import ctc_logits_to_time_first, maybe_wrap_ctc_data_parallel
 from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
 from src.models.resnet_ctc import ResNetCTCConfig, ResNetCTCModel
+from src.utils.torch_utils import unwrap_model
 
 
 CTCPredictModel = CRNNCTCModel | ResNetCTCModel
@@ -58,11 +60,18 @@ def predict_manifest(
     autocontrast_cutoff: int | None = None,
     pad_value: float = 1.0,
     width_multiple: int = 4,
+    use_data_parallel: bool = True,
     device: torch.device | None = None,
 ) -> pd.DataFrame:
     """Predict transcriptions for a manifest dataframe."""
 
     device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    time_downsample_factor = unwrap_model(model).time_downsample_factor
+    model = maybe_wrap_ctc_data_parallel(
+        model,
+        device,
+        enabled=use_data_parallel,
+    )
     image_transform = make_ctc_image_transform(
         target_height=target_height,
         max_width=max_width,
@@ -71,7 +80,7 @@ def predict_manifest(
     collate = CTCCollate(
         pad_value=pad_value,
         width_multiple=width_multiple,
-        time_downsample_factor=model.time_downsample_factor,
+        time_downsample_factor=time_downsample_factor,
     )
     loader = DataLoader(
         CTCLineDataset(manifest, tokenizer, image_transform=image_transform),
@@ -88,6 +97,7 @@ def predict_manifest(
         images = batch.images.to(device, non_blocking=True)
         input_lengths = batch.input_lengths.to(device, non_blocking=True)
         logits = model(images)
+        logits = ctc_logits_to_time_first(logits, model)
         input_lengths = input_lengths.clamp(max=logits.shape[0])
         predictions = greedy_decode_batch(logits, input_lengths, tokenizer)
         rows.extend(
