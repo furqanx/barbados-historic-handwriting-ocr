@@ -96,9 +96,9 @@ tmp/
 temp/
 *.tmp
 
-notes.md
+# notes.md
 .agents
 .codex
-catalog.md
-hyperparameter.md
+# catalog.md
+# hyperparameter.md
 
