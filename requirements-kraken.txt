@@ -1,0 +1,5 @@
+kraken
+pandas
+pillow
+tqdm
+jiwer

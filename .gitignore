@@ -45,6 +45,7 @@ data/external/*
 data/splits/*
 data/metadata/*
 data/pylaia/*
+data/kraken/*
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
@@ -53,6 +54,7 @@ data/pylaia/*
 !data/splits/.gitkeep
 !data/metadata/.gitkeep
 !data/pylaia/.gitkeep
+!data/kraken/.gitkeep
 
 # Downloaded archives and large data files
 *.zip
@@ -72,6 +74,8 @@ data/pylaia/*
 # Model artifacts
 models/pylaia/*
 !models/pylaia/.gitkeep
+models/kraken/*
+!models/kraken/.gitkeep
 *.ckpt
 *.pt
 *.pth
@@ -87,11 +91,13 @@ outputs/predictions/*
 outputs/submissions/*
 outputs/exports/*
 outputs/pylaia/*
+outputs/kraken/*
 !outputs/checkpoints/.gitkeep
 !outputs/predictions/.gitkeep
 !outputs/submissions/.gitkeep
 !outputs/exports/.gitkeep
 !outputs/pylaia/.gitkeep
+!outputs/kraken/.gitkeep
 
 # Reports generated from experiments
 reports/*.html

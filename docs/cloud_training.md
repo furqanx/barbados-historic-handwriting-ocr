@@ -265,3 +265,12 @@ prepare_pylaia_dataset.py -> validate_pylaia_dataset.py -> download_pylaia_model
 
 Note that PyLaia 1.1.2 supports Python 3.9 and 3.10, so use a Python 3.10 cloud
 environment for this branch of experiments.
+
+## Kraken HTR experiment
+
+Kraken uses another external historical HTR workflow. See
+`docs/kraken_training.md` for the full sequence:
+
+```text
+prepare_kraken_dataset.py -> download_kraken_model.py -> train_kraken.py -> test_kraken.py -> predict_kraken.py -> convert_kraken_predictions.py
+```
