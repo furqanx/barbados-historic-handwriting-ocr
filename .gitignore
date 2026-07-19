@@ -46,6 +46,7 @@ data/splits/*
 data/metadata/*
 data/pylaia/*
 data/kraken/*
+data/paddleocr/*
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
@@ -55,6 +56,7 @@ data/kraken/*
 !data/metadata/.gitkeep
 !data/pylaia/.gitkeep
 !data/kraken/.gitkeep
+!data/paddleocr/.gitkeep
 
 # Downloaded archives and large data files
 *.zip
@@ -76,6 +78,8 @@ models/pylaia/*
 !models/pylaia/.gitkeep
 models/kraken/*
 !models/kraken/.gitkeep
+models/paddleocr/*
+!models/paddleocr/.gitkeep
 *.ckpt
 *.pt
 *.pth
@@ -92,12 +96,14 @@ outputs/submissions/*
 outputs/exports/*
 outputs/pylaia/*
 outputs/kraken/*
+outputs/paddleocr/*
 !outputs/checkpoints/.gitkeep
 !outputs/predictions/.gitkeep
 !outputs/submissions/.gitkeep
 !outputs/exports/.gitkeep
 !outputs/pylaia/.gitkeep
 !outputs/kraken/.gitkeep
+!outputs/paddleocr/.gitkeep
 
 # Reports generated from experiments
 reports/*.html

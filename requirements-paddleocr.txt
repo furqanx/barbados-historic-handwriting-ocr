@@ -1,0 +1,7 @@
+paddleocr
+paddlepaddle-gpu
+pandas
+pillow
+tqdm
+pyyaml
+jiwer

@@ -274,3 +274,12 @@ Kraken uses another external historical HTR workflow. See
 ```text
 prepare_kraken_dataset.py -> download_kraken_model.py -> train_kraken.py -> test_kraken.py -> predict_kraken.py -> convert_kraken_predictions.py
 ```
+
+## PaddleOCR recognition experiment
+
+PaddleOCR/SVTR/PP-OCR is a lower-priority external OCR recognizer workflow. See
+`docs/paddleocr_training.md` for the full sequence:
+
+```text
+prepare_paddleocr_dataset.py -> make_paddleocr_config.py -> train_paddleocr_rec.py -> eval_paddleocr_rec.py -> predict_paddleocr_rec.py -> convert_paddleocr_predictions.py
+```
