@@ -44,6 +44,7 @@ data/features/*
 data/external/*
 data/splits/*
 data/metadata/*
+data/pylaia/*
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
@@ -51,6 +52,7 @@ data/metadata/*
 !data/external/.gitkeep
 !data/splits/.gitkeep
 !data/metadata/.gitkeep
+!data/pylaia/.gitkeep
 
 # Downloaded archives and large data files
 *.zip
@@ -68,6 +70,8 @@ data/metadata/*
 *.hdf5
 
 # Model artifacts
+models/pylaia/*
+!models/pylaia/.gitkeep
 *.ckpt
 *.pt
 *.pth
@@ -82,10 +86,12 @@ outputs/checkpoints/*
 outputs/predictions/*
 outputs/submissions/*
 outputs/exports/*
+outputs/pylaia/*
 !outputs/checkpoints/.gitkeep
 !outputs/predictions/.gitkeep
 !outputs/submissions/.gitkeep
 !outputs/exports/.gitkeep
+!outputs/pylaia/.gitkeep
 
 # Reports generated from experiments
 reports/*.html
@@ -101,4 +107,3 @@ temp/
 .codex
 # catalog.md
 # hyperparameter.md
-

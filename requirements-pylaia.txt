@@ -1,0 +1,3 @@
+pylaia==1.1.2
+huggingface_hub
+hf_xet

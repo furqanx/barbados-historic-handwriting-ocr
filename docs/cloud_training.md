@@ -253,3 +253,15 @@ python scripts/make_folds.py \
 ```
 
 Use the Kaggle notebook file browser to confirm the exact folder name.
+
+## PyLaia HTR experiment
+
+PyLaia uses an external HTR workflow. See `docs/pylaia_training.md` for the
+full sequence:
+
+```text
+prepare_pylaia_dataset.py -> validate_pylaia_dataset.py -> download_pylaia_model.py -> train_pylaia.py -> predict_pylaia.py -> convert_pylaia_predictions.py
+```
+
+Note that PyLaia 1.1.2 supports Python 3.9 and 3.10, so use a Python 3.10 cloud
+environment for this branch of experiments.
