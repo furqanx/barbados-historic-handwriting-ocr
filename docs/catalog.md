@@ -202,3 +202,71 @@ Secara praktis, kandidat final paling kuat kemungkinan bukan satu model tunggal,
 [6]: https://github.com/clovaai/donut "GitHub - clovaai/donut: Official Implementation of OCR-free Document Understanding Transformer (Donut) and Synthetic Document Generator (SynthDoG), ECCV 2022 · GitHub"
 [7]: https://huggingface.co/Teklia/pylaia-himanis?utm_source=chatgpt.com "Teklia/pylaia-himanis"
 [8]: https://zenodo.org/records/12743230?utm_source=chatgpt.com "CATMuS Medieval"
+
+---
+
+Bisa dikelompokkan seperti ini:
+
+**1. Native HTR Line Recognition Workflow**
+Model:
+- `Teklia/pylaia-himanis`
+- `Teklia/pylaia-belfort`
+- `Teklia/pylaia-norhand-v1/v3`
+- `Teklia/pylaia-iam`
+
+Paradigma:
+- input berupa **line image**
+- resize fixed height, preserve aspect ratio
+- training pakai **CTC**
+- butuh charset/codec
+- workflow lewat PyLaia config/CLI
+- paling dekat dengan CRNN-CTC kita, tapi ekosistemnya berbeda
+
+**2. Kraken Historical HTR Workflow**
+Model:
+- `Kraken CATMuS Medieval`
+- `Kraken McCATMuS`
+- `Kraken TRIDIS`
+
+Paradigma:
+- input juga **line image**
+- preserve aspect ratio
+- recognition model khusus historical OCR/HTR
+- training/fine-tuning lewat Kraken/VGSL
+- sangat memperhatikan transcription convention, Unicode normalization, charset
+- mirip PyLaia secara task, tapi tooling dan format datanya berbeda
+
+**3. General OCR Recognizer Workflow**
+Model:
+- `PaddleOCR/SVTR/PP-OCR recognizer`
+
+Paradigma:
+- recognizer OCR umum
+- sering diasumsikan word/short text crop
+- preprocessing lebih kaku: fixed image shape, max text length
+- perlu banyak konfigurasi agar cocok untuk long handwritten line
+- bukan prioritas utama untuk dataset ini
+
+**4. Scene Text Recognition Workflow**
+Model:
+- `PARSeq`
+- `ABINet`
+- `SATRN`
+
+Paradigma:
+- umumnya untuk scene text / word-level recognition
+- input biasanya short cropped word/text
+- training pakai autoregressive atau visual-language recognition
+- max label length sering pendek
+- kurang natural untuk 60-120 karakter per line
+
+Ringkasnya:
+
+| Kelompok | Model | Paling Mirip Dengan Kode Kita? | Prioritas |
+|---|---|---:|---:|
+| PyLaia HTR | pylaia-himanis, belfort, norhand, iam | Ya, sama-sama line CTC | Tinggi |
+| Kraken HTR | CATMuS, McCATMuS, TRIDIS | Ya secara task, beda tooling | Tinggi-menengah |
+| PaddleOCR | SVTR/PP-OCR | Sebagian, tapi perlu adaptasi besar | Rendah |
+| Scene Text | PARSeq/ABINet/SATRN | Tidak terlalu | Rendah |
+
+Kalau ingin implementasi bertahap, urutan paling masuk akal: **PyLaia dulu**, lalu **Kraken**, lalu abaikan PaddleOCR/scene-text kecuali butuh eksperimen tambahan.
