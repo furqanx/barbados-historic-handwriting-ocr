@@ -21,6 +21,8 @@ Berikut seluruh alur pelatihan model yang sekarang ada di workspace kita.
 - Jalur CTC paling modern di kode kita.
 - Hyperparameter utama: `backbone-name`, `target-height`, `max-width`, `batch-size`, `lr`, `rnn-hidden-size`.
 
+---
+
 **4. TrOCR-Small default**
 - Script train: `scripts/train_trocr.py`
 - Script predict: `scripts/predict_trocr.py`
@@ -49,11 +51,15 @@ Berikut seluruh alur pelatihan model yang sekarang ada di workspace kita.
 - Paling berat, sebaiknya hanya kalau GPU cukup.
 - Hyperparameter utama: `batch-size 1`, `lr kecil`, `epochs sedikit`.
 
+---
+
 **8. Ensemble CSV**
 - Script: `scripts/ensemble_predictions.py`
 - Menggabungkan hasil prediksi beberapa model.
 - Bisa ensemble CRNN/ResNet/ConvNeXt/TrOCR/PyLaia/Kraken/PaddleOCR selama output-nya CSV `ID,Target`.
 - Cocok dilakukan di akhir.
+
+---
 
 **9. PyLaia HTR Workflow**
 - Prepare dataset: `scripts/prepare_pylaia_dataset.py`
