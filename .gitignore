@@ -59,7 +59,7 @@ data/paddleocr/*
 !data/paddleocr/.gitkeep
 
 # Downloaded archives and large data files
-*.zip
+# *.zip
 *.tar
 *.tar.gz
 *.tgz

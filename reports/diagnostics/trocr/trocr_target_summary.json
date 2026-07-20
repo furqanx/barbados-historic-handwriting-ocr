@@ -1,0 +1,10 @@
+{
+  "aspect_canvas_clipped_rows": 4096,
+  "exceeds_max_generation_length_rows": 0,
+  "exceeds_max_label_length_rows": 0,
+  "max_token_count": 35,
+  "median_pixels_per_char": 24.774193548387096,
+  "min_pixels_per_char": 12.8,
+  "p95_token_count": 25.0,
+  "rows": 4098
+}

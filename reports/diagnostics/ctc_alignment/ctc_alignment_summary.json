@@ -1,0 +1,9 @@
+{
+  "invalid_rows": 0,
+  "median_ctc_margin": 334.0,
+  "median_pixels_per_char": 25.29818990155605,
+  "min_ctc_margin": 26,
+  "min_pixels_per_char": 5.7272727272727275,
+  "rows": 4098,
+  "width_clipped_rows": 979
+}

@@ -1,0 +1,15 @@
+{
+  "cer": 0.09368834365415796,
+  "exact_match_rate": 0.05365853658536585,
+  "mean_row_cer": 0.0948760031606205,
+  "mean_row_wer": 0.334326410844477,
+  "rows": 820,
+  "score": 0.20881447636809988,
+  "total_char_deletions": 1636,
+  "total_char_insertions": 563,
+  "total_char_substitutions": 2597,
+  "total_word_deletions": 338,
+  "total_word_insertions": 127,
+  "total_word_substitutions": 2524,
+  "wer": 0.3239406090820418
+}
