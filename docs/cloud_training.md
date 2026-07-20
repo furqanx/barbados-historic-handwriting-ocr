@@ -240,6 +240,40 @@ python scripts/ensemble_predictions.py \
 For validation predictions, use the `*_valid_best.csv` files instead. The
 script will also save WER/CER/score when a `reference` column exists.
 
+## Diagnostic forensics
+
+Before running many full training jobs, use the diagnostics layer to audit the
+pipeline. See `docs/diagnostics.md` for the full sequence.
+
+```bash
+python scripts/diagnose_charset.py
+```
+
+```bash
+python scripts/diagnose_ctc_alignment.py \
+  --target-height 96 \
+  --max-width 2048 \
+  --time-downsample-factor 4
+```
+
+```bash
+python scripts/make_overfit_subset.py \
+  --n-samples 64 \
+  --require-chars "^*"
+```
+
+After a validation run finishes, evaluate the saved validation predictions:
+
+```bash
+python scripts/diagnose_evaluator.py \
+  --predictions outputs/predictions/crnn_ctc_h96_w2048_fold0_valid_best.csv
+```
+
+```bash
+python scripts/diagnose_error_groups.py \
+  --predictions outputs/predictions/crnn_ctc_h96_w2048_fold0_valid_best.csv
+```
+
 ## Kaggle path example
 
 Kaggle input paths usually look like this:

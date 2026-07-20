@@ -59,7 +59,7 @@ data/paddleocr/*
 !data/paddleocr/.gitkeep
 
 # Downloaded archives and large data files
-# *.zip
+*.zip
 *.tar
 *.tar.gz
 *.tgz
@@ -72,6 +72,7 @@ data/paddleocr/*
 *.jsonl
 *.h5
 *.hdf5
+*.md
 
 # Model artifacts
 models/pylaia/*
