@@ -12,7 +12,7 @@ from PIL import Image
 from tqdm.auto import tqdm
 
 from src.constants import FOLD_COL, ID_COL, TARGET_COL
-from src.features.text_normalization import normalize_text
+from src.common.text_normalization import normalize_text
 from src.paddleocr_rec.text import collect_paddleocr_characters, write_character_dict
 
 

@@ -11,7 +11,7 @@ from typing import Any
 import pandas as pd
 
 from src.constants import TARGET_COL
-from src.features.text_normalization import normalize_text
+from src.common.text_normalization import normalize_text
 
 
 DEFAULT_BLANK_TOKEN = "<blank>"

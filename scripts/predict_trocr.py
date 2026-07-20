@@ -15,7 +15,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import OUTPUTS_DIR, SAMPLE_SUBMISSION_CSV, TEST_MANIFEST  # noqa: E402
-from src.inference.trocr_predictor import (  # noqa: E402
+from src.trocr.predictor import (  # noqa: E402
     get_prediction_config,
     load_trocr_checkpoint,
     make_submission,

@@ -6,7 +6,7 @@ import unicodedata
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from src.features.text_normalization import normalize_text
+from src.common.text_normalization import normalize_text
 
 
 UNICODE_FORMS = ("preserve", "NFC", "NFKC", "NFD", "NFKD")

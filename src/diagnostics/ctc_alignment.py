@@ -9,7 +9,7 @@ import pandas as pd
 from PIL import Image
 
 from src.constants import ID_COL, TARGET_COL
-from src.features.text_normalization import normalize_text
+from src.common.text_normalization import normalize_text
 
 
 @dataclass(frozen=True)

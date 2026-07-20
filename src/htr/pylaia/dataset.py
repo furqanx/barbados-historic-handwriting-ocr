@@ -11,8 +11,8 @@ from PIL import Image
 from tqdm.auto import tqdm
 
 from src.constants import FOLD_COL, ID_COL, TARGET_COL
-from src.features.text_normalization import normalize_text
-from src.pylaia.charset import (
+from src.common.text_normalization import normalize_text
+from src.htr.pylaia.charset import (
     PYLAIA_SPACE_TOKEN,
     characters_to_symbols,
     collect_characters,

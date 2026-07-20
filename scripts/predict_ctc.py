@@ -15,7 +15,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import OUTPUTS_DIR, SAMPLE_SUBMISSION_CSV, TEST_MANIFEST  # noqa: E402
-from src.inference.crnn_ctc_predictor import (  # noqa: E402
+from src.ctc.predictor import (  # noqa: E402
     load_crnn_ctc_checkpoint,
     make_submission,
     predict_manifest,

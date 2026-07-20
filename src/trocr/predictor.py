@@ -12,7 +12,7 @@ from tqdm.auto import tqdm
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
 from src.constants import ID_COL, TARGET_COL
-from src.data.trocr_dataset import (
+from src.trocr.dataset import (
     TrOCRCollate,
     TrOCRLineDataset,
     TrOCRPreprocessMode,

@@ -2,7 +2,7 @@ import pandas as pd
 import torch
 from PIL import Image
 
-from src.data.trocr_dataset import (
+from src.trocr.dataset import (
     TrOCRCollate,
     TrOCRLineDataset,
     make_trocr_image_transform,

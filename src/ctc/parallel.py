@@ -5,7 +5,7 @@ from __future__ import annotations
 import torch
 from torch import Tensor, nn
 
-from src.utils.torch_utils import should_use_data_parallel
+from src.common.torch_utils import should_use_data_parallel
 
 
 class CTCBatchFirstWrapper(nn.Module):

@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.constants import ID_COL, TARGET_COL
-from src.kraken_htr.prediction_parser import (
+from src.htr.kraken.prediction_parser import (
     align_predictions_to_sample,
     load_kraken_prediction_dir,
 )

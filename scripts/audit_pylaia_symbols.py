@@ -14,7 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import TARGET_COL, TRAIN_MANIFEST  # noqa: E402
-from src.pylaia.charset import audit_symbols, load_syms  # noqa: E402
+from src.htr.pylaia.charset import audit_symbols, load_syms  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:

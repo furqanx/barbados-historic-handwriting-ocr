@@ -16,14 +16,14 @@ from tqdm.auto import tqdm
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
 from src.constants import FOLD_COL, ID_COL, TARGET_COL
-from src.data.trocr_dataset import (
+from src.trocr.dataset import (
     TrOCRCollate,
     TrOCRLineDataset,
     TrOCRPreprocessMode,
     make_trocr_image_transform,
 )
 from src.evaluation.metrics import TranscriptionScore, score_transcriptions
-from src.utils.torch_utils import maybe_wrap_data_parallel, unwrap_model
+from src.common.torch_utils import maybe_wrap_data_parallel, unwrap_model
 
 
 @dataclass(frozen=True)

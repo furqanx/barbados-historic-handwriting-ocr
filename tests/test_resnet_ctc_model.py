@@ -2,7 +2,7 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
-from src.models.resnet_ctc import ResNetCTCConfig, ResNetCTCModel
+from src.ctc.models.resnet import ResNetCTCConfig, ResNetCTCModel
 
 
 def test_resnet_ctc_forward_shape() -> None:

@@ -1,4 +1,4 @@
-from src.features.text_normalization import TextNormalizer, normalize_text
+from src.common.text_normalization import TextNormalizer, normalize_text
 
 
 def test_default_normalization_preserves_case_punctuation_and_symbols() -> None:

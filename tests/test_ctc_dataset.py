@@ -4,8 +4,8 @@ from PIL import Image
 
 torch = pytest.importorskip("torch")
 
-from src.data.char_tokenizer import build_tokenizer_from_texts
-from src.data.ctc_dataset import CTCLineDataset, CTCCollate, make_ctc_image_transform
+from src.ctc.tokenizer import build_tokenizer_from_texts
+from src.ctc.dataset import CTCLineDataset, CTCCollate, make_ctc_image_transform
 
 
 def test_ctc_dataset_returns_encoded_target_and_image_tensor(tmp_path) -> None:

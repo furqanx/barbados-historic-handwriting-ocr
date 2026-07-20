@@ -15,8 +15,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import CHAR_VOCAB_JSON, OUTPUTS_DIR, TRAIN_MANIFEST  # noqa: E402
-from src.data.char_tokenizer import CharacterTokenizer  # noqa: E402
-from src.training.ctc_trainer import CTCTrainingConfig, train_convnext_ctc  # noqa: E402
+from src.ctc.tokenizer import CharacterTokenizer  # noqa: E402
+from src.ctc.trainer import CTCTrainingConfig, train_convnext_ctc  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:

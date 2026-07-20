@@ -1,5 +1,5 @@
-from src.data.char_tokenizer import build_tokenizer_from_texts
-from src.inference.ctc_decoder import decode_token_id_batches, greedy_decode_ids
+from src.ctc.tokenizer import build_tokenizer_from_texts
+from src.ctc.decoder import decode_token_id_batches, greedy_decode_ids
 
 
 def test_greedy_decode_ids_collapses_repeats_and_removes_blank() -> None:

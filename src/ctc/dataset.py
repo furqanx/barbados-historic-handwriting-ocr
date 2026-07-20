@@ -14,12 +14,12 @@ from torch import Tensor
 from torch.utils.data import Dataset
 
 from src.constants import ID_COL, TARGET_COL
-from src.data.char_tokenizer import CharacterTokenizer
-from src.features.image_preprocessing import (
+from src.ctc.tokenizer import CharacterTokenizer
+from src.common.image_preprocessing import (
     ResizeKeepAspectConfig,
     ResizeKeepAspectTransform,
 )
-from src.features.text_normalization import normalize_text
+from src.common.text_normalization import normalize_text
 
 
 TensorTransform = Callable[[Image.Image], Tensor]

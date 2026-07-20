@@ -2,9 +2,9 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
-from src.models.ctc_parallel import CTCBatchFirstWrapper, ctc_logits_to_time_first
-from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
-from src.utils.torch_utils import unwrap_model
+from src.ctc.parallel import CTCBatchFirstWrapper, ctc_logits_to_time_first
+from src.ctc.models.crnn import CRNNCTCConfig, CRNNCTCModel
+from src.common.torch_utils import unwrap_model
 
 
 def test_ctc_batch_first_wrapper_returns_batch_first_logits() -> None:

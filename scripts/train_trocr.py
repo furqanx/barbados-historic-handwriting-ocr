@@ -15,7 +15,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import OUTPUTS_DIR, TRAIN_MANIFEST  # noqa: E402
-from src.training.trocr_trainer import TrOCRTrainingConfig, train_trocr  # noqa: E402
+from src.trocr.trainer import TrOCRTrainingConfig, train_trocr  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:

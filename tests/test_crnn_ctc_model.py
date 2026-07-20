@@ -2,7 +2,7 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
-from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
+from src.ctc.models.crnn import CRNNCTCConfig, CRNNCTCModel
 
 
 def test_crnn_ctc_forward_shape() -> None:

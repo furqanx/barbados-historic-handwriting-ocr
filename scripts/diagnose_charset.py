@@ -14,7 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import CHAR_VOCAB_JSON, TARGET_COL, TRAIN_CSV  # noqa: E402
-from src.data.char_tokenizer import CharacterTokenizer  # noqa: E402
+from src.ctc.tokenizer import CharacterTokenizer  # noqa: E402
 from src.diagnostics.charset_audit import run_charset_audit  # noqa: E402
 
 

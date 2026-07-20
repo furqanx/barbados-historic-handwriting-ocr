@@ -1,7 +1,7 @@
 import pytest
 from PIL import Image
 
-from src.features.image_preprocessing import (
+from src.common.image_preprocessing import (
     ResizeKeepAspectConfig,
     ResizeKeepAspectTransform,
     ResizePadConfig,

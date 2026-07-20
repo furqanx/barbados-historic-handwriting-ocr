@@ -12,7 +12,7 @@ from typing import Iterable
 
 from jiwer import cer, wer
 
-from src.features.text_normalization import normalize_texts
+from src.common.text_normalization import normalize_texts
 
 
 @dataclass(frozen=True)

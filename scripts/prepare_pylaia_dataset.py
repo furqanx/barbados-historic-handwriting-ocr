@@ -14,7 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import PYLAIA_DATA_DIR, TEST_MANIFEST, TRAIN_MANIFEST  # noqa: E402
-from src.pylaia.dataset import prepare_pylaia_dataset  # noqa: E402
+from src.htr.pylaia.dataset import prepare_pylaia_dataset  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:

@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image
 
 from src.constants import FOLD_COL, ID_COL, TARGET_COL
-from src.pylaia.dataset import prepare_pylaia_dataset
+from src.htr.pylaia.dataset import prepare_pylaia_dataset
 
 
 def _make_image(path: Path, size: tuple[int, int] = (40, 10)) -> None:

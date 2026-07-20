@@ -1,6 +1,6 @@
 import pytest
 
-from src.data.char_tokenizer import CharacterTokenizer, build_tokenizer_from_texts
+from src.ctc.tokenizer import CharacterTokenizer, build_tokenizer_from_texts
 
 
 def test_build_tokenizer_reserves_blank_id_zero() -> None:

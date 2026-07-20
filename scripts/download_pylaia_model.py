@@ -12,7 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import PYLAIA_MODELS_DIR  # noqa: E402
-from src.pylaia.model_registry import (  # noqa: E402
+from src.htr.pylaia.model_registry import (  # noqa: E402
     PYLAIA_REQUIRED_MODEL_FILES,
     resolve_model_repo,
 )

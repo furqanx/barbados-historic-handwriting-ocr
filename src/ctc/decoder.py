@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 
-from src.data.char_tokenizer import CharacterTokenizer
+from src.ctc.tokenizer import CharacterTokenizer
 
 
 def greedy_decode_ids(

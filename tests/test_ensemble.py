@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from src.inference.ensemble import (
+from src.ensemble.csv_ensemble import (
     NamedPredictions,
     ensemble_predictions,
     make_submission,

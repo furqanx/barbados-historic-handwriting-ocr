@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.constants import ID_COL, TARGET_COL
-from src.pylaia.charset import detokenize_text
+from src.htr.pylaia.charset import detokenize_text
 
 
 def parse_pylaia_decode_output(

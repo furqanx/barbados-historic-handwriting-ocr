@@ -13,8 +13,8 @@ from torch import Tensor
 from torch.utils.data import Dataset
 
 from src.constants import ID_COL, TARGET_COL
-from src.features.image_preprocessing import ResizePadConfig, ResizePadTransform
-from src.features.text_normalization import normalize_text
+from src.common.image_preprocessing import ResizePadConfig, ResizePadTransform
+from src.common.text_normalization import normalize_text
 
 
 TrOCRPreprocessMode = Literal["default", "aspect"]

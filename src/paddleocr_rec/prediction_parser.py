@@ -10,7 +10,7 @@ from typing import Any
 import pandas as pd
 
 from src.constants import ID_COL, TARGET_COL
-from src.features.text_normalization import normalize_text
+from src.common.text_normalization import normalize_text
 
 
 def load_paddleocr_prediction_file(path: str | Path) -> pd.DataFrame:

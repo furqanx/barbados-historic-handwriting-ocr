@@ -15,7 +15,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.constants import ID_COL, OUTPUTS_DIR, SAMPLE_SUBMISSION_CSV, TARGET_COL  # noqa: E402
 from src.evaluation.metrics import score_transcriptions  # noqa: E402
-from src.pylaia.prediction_parser import (  # noqa: E402
+from src.htr.pylaia.prediction_parser import (  # noqa: E402
     align_predictions_to_sample,
     load_pylaia_predictions,
 )

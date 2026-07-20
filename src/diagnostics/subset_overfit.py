@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.constants import FOLD_COL, ID_COL, TARGET_COL
-from src.features.text_normalization import normalize_text
+from src.common.text_normalization import normalize_text
 
 
 def make_overfit_manifest(

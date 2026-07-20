@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from src.features.text_normalization import normalize_text
+from src.common.text_normalization import normalize_text
 
 
 @dataclass(frozen=True)

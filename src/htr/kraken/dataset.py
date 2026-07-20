@@ -11,7 +11,7 @@ from PIL import Image
 from tqdm.auto import tqdm
 
 from src.constants import FOLD_COL, ID_COL, TARGET_COL
-from src.kraken_htr.text import normalize_for_kraken
+from src.htr.kraken.text import normalize_for_kraken
 
 
 @dataclass(frozen=True)

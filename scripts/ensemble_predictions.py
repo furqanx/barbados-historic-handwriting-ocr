@@ -14,7 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.constants import OUTPUTS_DIR, SAMPLE_SUBMISSION_CSV  # noqa: E402
-from src.inference.ensemble import (  # noqa: E402
+from src.ensemble.csv_ensemble import (  # noqa: E402
     ensemble_predictions,
     evaluate_ensemble,
     evaluate_prediction_sets,

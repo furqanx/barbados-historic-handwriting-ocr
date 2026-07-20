@@ -10,14 +10,14 @@ from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
 from src.constants import ID_COL, TARGET_COL
-from src.data.char_tokenizer import CharacterTokenizer
-from src.data.ctc_dataset import CTCCollate, CTCLineDataset, make_ctc_image_transform
-from src.inference.ctc_decoder import greedy_decode_batch
-from src.models.ctc_parallel import ctc_logits_to_time_first, maybe_wrap_ctc_data_parallel
-from src.models.convnext_ctc import ConvNeXtCTCConfig, ConvNeXtCTCModel
-from src.models.crnn_ctc import CRNNCTCConfig, CRNNCTCModel
-from src.models.resnet_ctc import ResNetCTCConfig, ResNetCTCModel
-from src.utils.torch_utils import unwrap_model
+from src.ctc.tokenizer import CharacterTokenizer
+from src.ctc.dataset import CTCCollate, CTCLineDataset, make_ctc_image_transform
+from src.ctc.decoder import greedy_decode_batch
+from src.ctc.parallel import ctc_logits_to_time_first, maybe_wrap_ctc_data_parallel
+from src.ctc.models.convnext import ConvNeXtCTCConfig, ConvNeXtCTCModel
+from src.ctc.models.crnn import CRNNCTCConfig, CRNNCTCModel
+from src.ctc.models.resnet import ResNetCTCConfig, ResNetCTCModel
+from src.common.torch_utils import unwrap_model
 
 
 CTCPredictModel = CRNNCTCModel | ResNetCTCModel | ConvNeXtCTCModel

@@ -7,8 +7,8 @@ from pathlib import Path
 import pandas as pd
 
 from src.constants import ID_COL, TARGET_COL
-from src.features.text_normalization import normalize_text
-from src.kraken_htr.text import normalize_for_kraken
+from src.common.text_normalization import normalize_text
+from src.htr.kraken.text import normalize_for_kraken
 
 
 def load_kraken_prediction_dir(

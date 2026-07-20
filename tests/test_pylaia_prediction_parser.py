@@ -1,5 +1,5 @@
 from src.constants import ID_COL, TARGET_COL
-from src.pylaia.prediction_parser import parse_pylaia_decode_output
+from src.htr.pylaia.prediction_parser import parse_pylaia_decode_output
 
 
 def test_parse_pylaia_decode_output_strips_split_prefix() -> None:

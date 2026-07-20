@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.pylaia.charset import (
+from src.htr.pylaia.charset import (
     PYLAIA_CTC_TOKEN,
     PYLAIA_SPACE_TOKEN,
     characters_to_symbols,

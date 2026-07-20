@@ -1,4 +1,4 @@
-from src.kraken_htr.text import audit_characters, normalize_for_kraken
+from src.htr.kraken.text import audit_characters, normalize_for_kraken
 
 
 def test_normalize_for_kraken_supports_nfd() -> None:

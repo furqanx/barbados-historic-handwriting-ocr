@@ -3,7 +3,7 @@ import pytest
 torch = pytest.importorskip("torch")
 pytest.importorskip("timm")
 
-from src.models.convnext_ctc import ConvNeXtCTCConfig, ConvNeXtCTCModel
+from src.ctc.models.convnext import ConvNeXtCTCConfig, ConvNeXtCTCModel
 
 
 def test_convnext_ctc_forward_shape_without_pretraining() -> None:
