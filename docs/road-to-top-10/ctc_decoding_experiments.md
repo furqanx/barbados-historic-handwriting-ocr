@@ -172,3 +172,84 @@ Yang dipantau:
 - apakah output makin terlalu pendek
 
 Submission test baru dibuat setelah validation membaik.
+## One-command CTC decoding runner
+
+Use `scripts/run_ctc_decoding_experiments.py` to run the agreed decoding grid
+without manually writing every `predict_ctc.py` command. This does not retrain
+the visual ResNet-CTC model.
+
+Default experiment grid:
+
+| Key | Decoder | Beam | LM weight | Rerank |
+|---|---|---:|---:|---|
+| `beam10` | beam search | 10 | 0.00 | no |
+| `beam25` | beam search | 25 | 0.00 | no |
+| `beam25_lm002` | beam search + char LM | 25 | 0.02 | no |
+| `beam25_lm005` | beam search + char LM | 25 | 0.05 | no |
+| `beam25_lm010` | beam search + char LM | 25 | 0.10 | no |
+| `beam25_lm005_rerank` | beam search + char LM + reranking | 25 | 0.05 | yes |
+
+### Validation first
+
+Run fold 0 only first. This trains the lightweight character LM if needed, then
+saves validation predictions and evaluator reports for every decoding setup.
+
+```bash
+python scripts/run_ctc_decoding_experiments.py \
+  --folds 0 \
+  --phase valid \
+  --checkpoint-template "outputs/checkpoints/resnet_ctc_h96_w2048_fold{fold}_best.pt" \
+  --run-template "resnet_ctc_h96_w2048_fold{fold}" \
+  --train-csv /path/to/Train.csv \
+  --device cuda
+```
+
+To test only one or two candidates:
+
+```bash
+python scripts/run_ctc_decoding_experiments.py \
+  --folds 0 \
+  --phase valid \
+  --experiment beam25 \
+  --experiment beam25_lm005 \
+  --train-csv /path/to/Train.csv \
+  --device cuda
+```
+
+### Apply best setup to all folds
+
+After validation identifies a good setup, run it for test predictions on all
+folds. Example for `beam25_lm005`:
+
+```bash
+python scripts/run_ctc_decoding_experiments.py \
+  --folds 0 1 2 3 4 \
+  --phase test \
+  --experiment beam25_lm005 \
+  --checkpoint-template "outputs/checkpoints/resnet_ctc_h96_w2048_fold{fold}_best.pt" \
+  --run-template "resnet_ctc_h96_w2048_fold{fold}" \
+  --train-csv /path/to/Train.csv \
+  --device cuda
+```
+
+Outputs:
+
+```text
+outputs/predictions/<run-name>_<experiment>_valid.csv
+outputs/predictions/<run-name>_<experiment>_test.csv
+outputs/submissions/<run-name>_<experiment>_submission.csv
+reports/diagnostics/evaluation/<run-name>_<experiment>/
+outputs/language_models/char_ngram_order4.json
+```
+
+### Colab path example
+
+```bash
+!python barbados-historic-handwriting-ocr/scripts/run_ctc_decoding_experiments.py \
+  --folds 0 \
+  --phase valid \
+  --experiment beam25 \
+  --experiment beam25_lm005 \
+  --train-csv "/content/drive/MyDrive/kaggle competitions/data/raw/road-barbados-historic-handwriting-challenge/Train.csv" \
+  --device cuda
+```

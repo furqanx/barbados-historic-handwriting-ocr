@@ -206,6 +206,31 @@ These experiments reuse an existing CTC checkpoint. They do not retrain the
 visual model. Run them against validation first, compare WER/CER, then create a
 test submission only for the best decoding setup.
 
+For the full beam/LM/rerank grid, prefer the orchestration CLI:
+
+```bash
+python scripts/run_ctc_decoding_experiments.py \
+  --folds 0 \
+  --phase valid \
+  --checkpoint-template "outputs/checkpoints/resnet_ctc_h96_w2048_fold{fold}_best.pt" \
+  --run-template "resnet_ctc_h96_w2048_fold{fold}" \
+  --train-csv /path/to/Train.csv \
+  --device cuda
+```
+
+Then apply the best configuration to all folds:
+
+```bash
+python scripts/run_ctc_decoding_experiments.py \
+  --folds 0 1 2 3 4 \
+  --phase test \
+  --experiment beam25_lm005 \
+  --checkpoint-template "outputs/checkpoints/resnet_ctc_h96_w2048_fold{fold}_best.pt" \
+  --run-template "resnet_ctc_h96_w2048_fold{fold}" \
+  --train-csv /path/to/Train.csv \
+  --device cuda
+```
+
 ### Beam search without language model
 
 Validation prediction:
