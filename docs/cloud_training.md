@@ -200,6 +200,117 @@ python scripts/predict_ctc.py \
   --device cuda
 ```
 
+## CTC decoding experiments
+
+These experiments reuse an existing CTC checkpoint. They do not retrain the
+visual model. Run them against validation first, compare WER/CER, then create a
+test submission only for the best decoding setup.
+
+### Beam search without language model
+
+Validation prediction:
+
+```bash
+python scripts/predict_ctc.py \
+  --run-name resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam10_valid \
+  --checkpoint outputs/checkpoints/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_best.pt \
+  --test-manifest data/metadata/train_manifest.csv \
+  --fold 0 \
+  --predictions-output outputs/predictions/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam10_valid.csv \
+  --decoder beam \
+  --beam-size 10 \
+  --candidates-top-k 5 \
+  --no-submission \
+  --device cuda
+```
+
+Evaluate it:
+
+```bash
+python scripts/diagnose_evaluator.py \
+  --predictions outputs/predictions/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam10_valid.csv
+```
+
+Test submission:
+
+```bash
+python scripts/predict_ctc.py \
+  --run-name resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam10 \
+  --checkpoint outputs/checkpoints/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_best.pt \
+  --decoder beam \
+  --beam-size 10 \
+  --candidates-top-k 5 \
+  --device cuda
+```
+
+### Character n-gram LM
+
+Train a lightweight character LM from `Train.csv`:
+
+```bash
+python scripts/train_char_lm.py \
+  --train-csv /path/to/Train.csv \
+  --char-vocab data/metadata/char_vocab.json \
+  --order 4 \
+  --add-k 0.5 \
+  --output outputs/language_models/char_ngram_order4.json
+```
+
+Validation prediction:
+
+```bash
+python scripts/predict_ctc.py \
+  --run-name resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam25_lm005_valid \
+  --checkpoint outputs/checkpoints/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_best.pt \
+  --test-manifest data/metadata/train_manifest.csv \
+  --fold 0 \
+  --predictions-output outputs/predictions/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam25_lm005_valid.csv \
+  --decoder beam_lm \
+  --beam-size 25 \
+  --lm-path outputs/language_models/char_ngram_order4.json \
+  --lm-weight 0.05 \
+  --candidates-top-k 5 \
+  --no-submission \
+  --device cuda
+```
+
+Test submission:
+
+```bash
+python scripts/predict_ctc.py \
+  --run-name resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam25_lm005 \
+  --checkpoint outputs/checkpoints/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_best.pt \
+  --decoder beam_lm \
+  --beam-size 25 \
+  --lm-path outputs/language_models/char_ngram_order4.json \
+  --lm-weight 0.05 \
+  --candidates-top-k 5 \
+  --device cuda
+```
+
+### Beam search + LM + conservative reranking
+
+Use this only after validating that plain beam or beam+LM is competitive.
+
+```bash
+python scripts/predict_ctc.py \
+  --run-name resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam25_lm005_rerank_valid \
+  --checkpoint outputs/checkpoints/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_best.pt \
+  --test-manifest data/metadata/train_manifest.csv \
+  --fold 0 \
+  --predictions-output outputs/predictions/resnet_ctc_h96_w3072_bs8_lr7e4_fold0_beam25_lm005_rerank_valid.csv \
+  --decoder beam_lm_rerank \
+  --beam-size 25 \
+  --lm-path outputs/language_models/char_ngram_order4.json \
+  --lm-weight 0.05 \
+  --candidates-top-k 5 \
+  --rerank-repeated-whitespace-penalty 0.2 \
+  --rerank-repeated-punctuation-penalty 0.2 \
+  --rerank-edge-space-penalty 0.2 \
+  --no-submission \
+  --device cuda
+```
+
 ## ConvNeXt-CTC experiment
 
 This uses a `timm` ConvNeXt-tiny encoder with ImageNet initialization, followed

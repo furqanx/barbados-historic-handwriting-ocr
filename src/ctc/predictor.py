@@ -13,6 +13,14 @@ from src.constants import ID_COL, TARGET_COL
 from src.ctc.tokenizer import CharacterTokenizer
 from src.ctc.dataset import CTCCollate, CTCLineDataset, make_ctc_image_transform
 from src.ctc.decoder import greedy_decode_batch
+from src.ctc.decoding import (
+    BeamSearchConfig,
+    CTCDecoderConfig,
+    CharNGramLanguageModel,
+    RerankConfig,
+    ctc_prefix_beam_search_batch,
+    rerank_candidates,
+)
 from src.ctc.parallel import ctc_logits_to_time_first, maybe_wrap_ctc_data_parallel
 from src.ctc.models.convnext import ConvNeXtCTCConfig, ConvNeXtCTCModel
 from src.ctc.models.crnn import CRNNCTCConfig, CRNNCTCModel
@@ -67,9 +75,16 @@ def predict_manifest(
     pad_value: float = 1.0,
     width_multiple: int = 4,
     use_data_parallel: bool = True,
+    decoder_config: CTCDecoderConfig | None = None,
+    language_model: CharNGramLanguageModel | None = None,
+    include_references: bool = True,
     device: torch.device | None = None,
 ) -> pd.DataFrame:
     """Predict transcriptions for a manifest dataframe."""
+
+    decoder_config = decoder_config or CTCDecoderConfig()
+    if decoder_config.decoder in {"beam_lm", "beam_lm_rerank"} and language_model is None:
+        raise ValueError(f"Decoder {decoder_config.decoder!r} requires a language model.")
 
     device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
     time_downsample_factor = unwrap_model(model).time_downsample_factor
@@ -105,13 +120,76 @@ def predict_manifest(
         logits = model(images)
         logits = ctc_logits_to_time_first(logits, model)
         input_lengths = input_lengths.clamp(max=logits.shape[0])
-        predictions = greedy_decode_batch(logits, input_lengths, tokenizer)
-        rows.extend(
-            {ID_COL: image_id, TARGET_COL: prediction}
-            for image_id, prediction in zip(batch.image_ids, predictions)
+        predictions, candidate_payloads = decode_ctc_batch(
+            logits,
+            input_lengths,
+            tokenizer,
+            decoder_config=decoder_config,
+            language_model=language_model,
         )
 
+        for idx, (image_id, prediction) in enumerate(
+            zip(batch.image_ids, predictions, strict=True)
+        ):
+            row = {ID_COL: image_id, TARGET_COL: prediction}
+            if include_references and batch.texts[idx] is not None:
+                row["reference"] = batch.texts[idx]
+            if candidate_payloads is not None:
+                row["candidates"] = candidate_payloads[idx]
+            rows.append(row)
+
     return pd.DataFrame(rows)
+
+
+def decode_ctc_batch(
+    logits: torch.Tensor,
+    input_lengths: torch.Tensor,
+    tokenizer: CharacterTokenizer,
+    *,
+    decoder_config: CTCDecoderConfig,
+    language_model: CharNGramLanguageModel | None = None,
+) -> tuple[list[str], list[str] | None]:
+    """Decode one CTC batch according to the requested strategy."""
+
+    if decoder_config.decoder == "greedy":
+        return greedy_decode_batch(logits, input_lengths, tokenizer), None
+
+    beam_config = BeamSearchConfig(
+        beam_size=decoder_config.beam_size,
+        top_tokens_per_step=decoder_config.top_tokens_per_step,
+        lm_weight=decoder_config.lm_weight,
+        length_bonus=decoder_config.length_bonus,
+        candidates_top_k=decoder_config.candidates_top_k,
+    )
+    candidate_batches = ctc_prefix_beam_search_batch(
+        logits,
+        input_lengths,
+        tokenizer,
+        config=beam_config,
+        language_model=language_model,
+    )
+    if decoder_config.decoder == "beam_lm_rerank":
+        rerank_config = RerankConfig(
+            short_text_penalty=decoder_config.rerank_short_text_penalty,
+            min_chars=decoder_config.rerank_min_chars,
+            repeated_whitespace_penalty=decoder_config.rerank_repeated_whitespace_penalty,
+            repeated_punctuation_penalty=decoder_config.rerank_repeated_punctuation_penalty,
+            edge_space_penalty=decoder_config.rerank_edge_space_penalty,
+        )
+        candidate_batches = [
+            rerank_candidates(candidates, rerank_config) for candidates in candidate_batches
+        ]
+
+    predictions = [candidates[0].text if candidates else "" for candidates in candidate_batches]
+    candidate_payloads = [
+        " ||| ".join(
+            f"{candidate.text}\t{candidate.score:.6f}\t"
+            f"{candidate.acoustic_score:.6f}\t{candidate.lm_score:.6f}"
+            for candidate in candidates
+        )
+        for candidates in candidate_batches
+    ]
+    return predictions, candidate_payloads
 
 
 def make_submission(
