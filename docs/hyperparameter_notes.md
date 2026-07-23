@@ -145,7 +145,6 @@ Kraken checkpoints:
 Post-train decoding variants:
 
 - native/default decode;
-- beam search;
-- beam search + character LM;
-- beam search + character LM + reranking;
+- PyLaia LM decode with `--pylaia-lm-weight`, default `1.5`;
+- Kraken native decode;
 - validation-based post-processing if only final text is available.

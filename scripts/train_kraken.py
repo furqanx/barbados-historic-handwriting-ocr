@@ -32,7 +32,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resize", choices=["union", "new", "fail"], default="new")
     parser.add_argument(
         "--unicode-normalization",
-        choices=["NFC", "NFKC", "NFD", "NFKD"],
+        choices=["preserve", "NFC", "NFKC", "NFD", "NFKD"],
         default="NFD",
     )
     parser.add_argument("--device", default="cuda:0")
@@ -92,8 +92,6 @@ def build_train_command(args: argparse.Namespace) -> list[str]:
         str(args.weight_decay),
         "--optimizer",
         args.optimizer,
-        "-u",
-        args.unicode_normalization,
         "-q",
         args.quit,
         "-t",
@@ -101,6 +99,8 @@ def build_train_command(args: argparse.Namespace) -> list[str]:
         "-e",
         str(val_files),
     ]
+    if args.unicode_normalization != "preserve":
+        command.extend(["-u", args.unicode_normalization])
     command.append("--augment" if args.augment else "--no-augment")
     command.extend(args.extra_arg)
     return command
@@ -122,4 +122,3 @@ def _require_files(paths: list[Path]) -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -62,6 +62,18 @@ mccatmus
 tridis
 ```
 
+To download all planned Kraken checkpoints:
+
+```bash
+%%bash
+REPO=/kaggle/working/barbados-historic-handwriting-ocr
+for MODEL in catmus-medieval mccatmus tridis; do
+  python $REPO/scripts/download_kraken_model.py \
+    --model-key $MODEL \
+    --output-dir $REPO/models/kraken
+done
+```
+
 ## Fine-Tune
 
 ```bash
@@ -82,6 +94,77 @@ tridis
 
 If a Kraken version rejects a CLI argument, inspect `ketos train --help`, then
 pass the corrected runtime-specific argument with repeated `--extra-arg`.
+
+## Zero-Shot Screening Grid
+
+Start with a small validation subset to avoid repeating the previous `SIGKILL`
+problem:
+
+```bash
+!python /kaggle/working/barbados-historic-handwriting-ocr/scripts/run_kraken_htr_experiments.py \
+  --models catmus-medieval mccatmus tridis \
+  --folds 0 \
+  --phase zeroshot-small \
+  --max-images 100 \
+  --device cuda:0
+```
+
+If stable, run full validation:
+
+```bash
+!python /kaggle/working/barbados-historic-handwriting-ocr/scripts/run_kraken_htr_experiments.py \
+  --models catmus-medieval mccatmus tridis \
+  --folds 0 \
+  --phase zeroshot \
+  --device cuda:0
+```
+
+The runner calls `predict_kraken.py` and `convert_kraken_predictions.py` for
+each model.
+
+## Fine-Tuning Grid
+
+Run selected models/folds:
+
+```bash
+!python /kaggle/working/barbados-historic-handwriting-ocr/scripts/run_kraken_htr_experiments.py \
+  --models catmus-medieval tridis \
+  --folds 0 \
+  --phase all \
+  --epochs 50 \
+  --batch-size 8 \
+  --lr 3e-4 \
+  --device cuda:0 \
+  --precision bf16-mixed
+```
+
+For the full approved grid:
+
+```text
+--models catmus-medieval mccatmus tridis --folds 0 1 2 3 4
+```
+
+## Decode Profiles
+
+The built-in Kraken profile is:
+
+- `native`: Kraken's documented recognition command:
+  `kraken -i image output segment -bl ocr -m model`.
+
+```bash
+!python /kaggle/working/barbados-historic-handwriting-ocr/scripts/run_kraken_htr_experiments.py \
+  --models catmus-medieval \
+  --folds 0 \
+  --phase decode \
+  --decode-profile native \
+  --device cuda:0
+```
+
+Kraken's official recognition quickstart does not expose a portable beam/LM
+argument equivalent to our PyTorch CTC decoder. If a specific installed Kraken
+version provides an extra recognition option, the runner still supports custom
+profiles via `--profile-extra-arg`, but by default we treat Kraken as native
+decode plus validation-based post-processing/ensemble.
 
 ## Ketos Validation Report
 
@@ -149,4 +232,3 @@ outputs/submissions/
 data/kraken/
 models/kraken/
 ```
-

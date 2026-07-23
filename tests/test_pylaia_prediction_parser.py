@@ -19,3 +19,12 @@ def test_parse_empty_prediction_line() -> None:
 
     assert parsed.to_dict("records") == [{ID_COL: "abc123", TARGET_COL: ""}]
 
+
+def test_parse_already_detokenized_output_normalizes_whitespace() -> None:
+    raw = "test/abc123 By   this   public act\n"
+
+    parsed = parse_pylaia_decode_output(raw, already_detokenized=True)
+
+    assert parsed.to_dict("records") == [
+        {ID_COL: "abc123", TARGET_COL: "By this public act"}
+    ]

@@ -32,6 +32,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sample-submission", type=Path, default=SAMPLE_SUBMISSION_CSV)
     parser.add_argument("--reference-manifest", type=Path, default=None)
     parser.add_argument("--id-prefix-to-strip", default=None)
+    parser.add_argument(
+        "--already-detokenized",
+        action="store_true",
+        help="Use when PyLaia outputs plain text, e.g. LM decoding with join_string=\"\".",
+    )
     return parser.parse_args()
 
 
@@ -40,6 +45,7 @@ def main() -> None:
     predictions = load_pylaia_predictions(
         args.raw_output,
         id_prefix_to_strip=args.id_prefix_to_strip,
+        already_detokenized=args.already_detokenized,
     )
     if args.reference_manifest is not None:
         reference = pd.read_csv(args.reference_manifest)

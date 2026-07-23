@@ -25,6 +25,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--split", choices=["train", "val", "test"], default="test")
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--suffix", default=".txt")
+    parser.add_argument(
+        "--max-images",
+        type=int,
+        default=None,
+        help="Only process the first N images after --start-index. Useful for memory-safe screening.",
+    )
+    parser.add_argument(
+        "--start-index",
+        type=int,
+        default=0,
+        help="Start processing at this 0-based image index.",
+    )
+    parser.add_argument(
+        "--skip-existing",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Skip images whose output text file already exists.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--extra-arg",
@@ -48,8 +66,18 @@ def main() -> None:
         for line in files.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+    if args.start_index < 0:
+        raise ValueError("--start-index must be non-negative.")
+    image_paths = image_paths[args.start_index :]
+    if args.max_images is not None:
+        if args.max_images <= 0:
+            raise ValueError("--max-images must be positive when provided.")
+        image_paths = image_paths[: args.max_images]
+
     for image_path in tqdm(image_paths, desc=f"kraken {args.split}", leave=False):
         output = output_dir / f"{image_path.stem}{args.suffix}"
+        if args.skip_existing and output.exists():
+            continue
         command = [
             "kraken",
             "-i",
@@ -78,4 +106,3 @@ def _require_files(paths: list[Path]) -> None:
 
 if __name__ == "__main__":
     main()
-

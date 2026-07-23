@@ -204,15 +204,14 @@ experiment inventory is 40 fine-tuning runs.
 Post-train decoding variants to evaluate where supported:
 
 - native/default CTC decode;
-- beam search without language model;
-- beam search with character-level language model;
-- beam search with character-level language model plus conservative reranking;
+- PyLaia LM decode when `language_model.arpa.gz`, `tokens.txt`, and `lexicon.txt` exist;
 - validation-based post-processing if the engine only exposes final text.
 
 Important constraint: our internal PyTorch CTC decoder can be applied directly
 only when we can access timestep logits in our expected format. For PyLaia and
-Kraken, prefer native decoder/LM options first; use local post-processing when
-only final text is available.
+Kraken, prefer documented native decoder/LM options first; use local
+post-processing when only final text is available. Kraken currently has no
+portable documented beam/LM CLI in our wrapper.
 
 ### 2. Data-Centric Improvements
 

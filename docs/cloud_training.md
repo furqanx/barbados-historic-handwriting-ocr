@@ -433,6 +433,12 @@ full sequence:
 prepare_pylaia_dataset.py -> validate_pylaia_dataset.py -> download_pylaia_model.py -> train_pylaia.py -> predict_pylaia.py -> convert_pylaia_predictions.py
 ```
 
+For model/fold grids, use:
+
+```text
+run_pylaia_htr_experiments.py
+```
+
 Note that PyLaia 1.1.2 supports Python 3.9 and 3.10, so use a Python 3.10 cloud
 environment for this branch of experiments.
 
@@ -443,6 +449,12 @@ Kraken uses another external historical HTR workflow. See
 
 ```text
 prepare_kraken_dataset.py -> download_kraken_model.py -> train_kraken.py -> test_kraken.py -> predict_kraken.py -> convert_kraken_predictions.py
+```
+
+For model/fold grids and memory-safe zero-shot screening, use:
+
+```text
+run_kraken_htr_experiments.py
 ```
 
 ## PaddleOCR recognition experiment

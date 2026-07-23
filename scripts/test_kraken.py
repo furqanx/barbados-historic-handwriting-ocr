@@ -27,7 +27,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument(
         "--unicode-normalization",
-        choices=["NFC", "NFKC", "NFD", "NFKD"],
+        choices=["preserve", "NFC", "NFKC", "NFD", "NFKD"],
         default="NFD",
     )
     parser.add_argument("--output", type=Path, default=None)
@@ -57,11 +57,11 @@ def build_test_command(args: argparse.Namespace) -> list[str]:
         "path",
         "-m",
         str(args.model),
-        "-u",
-        args.unicode_normalization,
         "-e",
         str(files),
     ]
+    if args.unicode_normalization != "preserve":
+        command.extend(["-u", args.unicode_normalization])
     command.extend(args.extra_arg)
     return command
 
@@ -89,4 +89,3 @@ def _require_files(paths: list[Path]) -> None:
 
 if __name__ == "__main__":
     main()
-

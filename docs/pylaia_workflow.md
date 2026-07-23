@@ -57,6 +57,18 @@ Start with Himanis.
 
 Other supported keys: `belfort`, `norhand-v1`, `norhand-v3`, `iam`.
 
+To download all planned PyLaia checkpoints:
+
+```bash
+%%bash
+REPO=/kaggle/working/barbados-historic-handwriting-ocr
+for MODEL in himanis belfort norhand-v1 norhand-v3 iam; do
+  python $REPO/scripts/download_pylaia_model.py \
+    --model-key $MODEL \
+    --output-dir $REPO/models/pylaia
+done
+```
+
 ## Audit Base Charset
 
 This is optional, but useful before fine-tuning a pretrained PyLaia checkpoint.
@@ -82,6 +94,77 @@ This is optional, but useful before fine-tuning a pretrained PyLaia checkpoint.
 
 If the installed PyLaia/PyTorch-Lightning version rejects `--trainer.gpus`, pass
 runtime-specific trainer arguments through `--extra-arg`.
+
+## Zero-Shot Screening Grid
+
+After preparing `data/pylaia/fold0_h128` and downloading all base models, run
+all pretrained checkpoints on fold 0 validation:
+
+```bash
+!python /kaggle/working/barbados-historic-handwriting-ocr/scripts/run_pylaia_htr_experiments.py \
+  --models himanis belfort norhand-v1 norhand-v3 iam \
+  --folds 0 \
+  --phase zeroshot \
+  --batch-size 16
+```
+
+The runner calls `predict_pylaia.py` and `convert_pylaia_predictions.py` for
+each model. Validation CSV files are saved in `outputs/predictions/`.
+
+## Fine-Tuning Grid
+
+Run selected models across selected folds:
+
+```bash
+!python /kaggle/working/barbados-historic-handwriting-ocr/scripts/run_pylaia_htr_experiments.py \
+  --models himanis iam \
+  --folds 0 \
+  --phase all \
+  --epochs 80 \
+  --batch-size 16 \
+  --lr 5e-4 \
+  --gpus 1
+```
+
+For the full approved grid, replace `--models himanis iam --folds 0` with:
+
+```text
+--models himanis belfort norhand-v1 norhand-v3 iam --folds 0 1 2 3 4
+```
+
+## Decode Profiles
+
+The built-in profiles are:
+
+- `native`: PyLaia default CTC decode.
+- `lm`: PyLaia documented KenLM/ARPA decoding using
+  `language_model.arpa.gz`, `tokens.txt`, and `lexicon.txt` from the downloaded
+  checkpoint directory.
+
+```bash
+!python /kaggle/working/barbados-historic-handwriting-ocr/scripts/run_pylaia_htr_experiments.py \
+  --models himanis \
+  --folds 0 \
+  --phase decode \
+  --decode-profile native \
+  --decode-profile lm \
+  --pylaia-lm-weight 1.5 \
+  --batch-size 16
+```
+
+The `lm` profile follows PyLaia's documented arguments:
+
+```text
+--decode.use_language_model True
+--decode.language_model_path <model_dir>/language_model.arpa.gz
+--decode.tokens_path <model_dir>/tokens.txt
+--decode.lexicon_path <model_dir>/lexicon.txt
+--decode.language_model_weight <weight>
+```
+
+PyLaia's current public documentation does not define a standalone portable
+beam-width argument separate from LM decoding. If a specific runtime version
+adds one, attach it manually with `--profile-extra-arg PROFILE:ARG`.
 
 ## Decode Test
 
