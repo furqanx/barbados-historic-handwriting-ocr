@@ -27,7 +27,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--num-workers", type=int, default=2)
-    parser.add_argument("--img-dir-arg", default="--img_dir")
+    parser.add_argument("--img-dir-arg", default="--img_dirs")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--extra-arg",
@@ -54,7 +54,7 @@ def build_predict_command(args: argparse.Namespace) -> list[str]:
         "--common.model_filename",
         str(model_file),
         args.img_dir_arg,
-        str(images),
+        _as_pylaia_list_arg(images),
         "--data.batch_size",
         str(args.batch_size),
         "--data.num_workers",
@@ -68,6 +68,10 @@ def build_predict_command(args: argparse.Namespace) -> list[str]:
     return command
 
 
+def _as_pylaia_list_arg(path: Path) -> str:
+    return f'["{path}"]'
+
+
 def main() -> None:
     args = parse_args()
     output = args.output or PYLAIA_OUTPUTS_DIR / args.run_name / f"{args.split}_raw.txt"
@@ -76,7 +80,14 @@ def main() -> None:
     print(f"Raw output: {output}")
     if args.dry_run:
         return
-    result = subprocess.run(command, check=True, text=True, capture_output=True)
+    try:
+        result = subprocess.run(command, check=True, text=True, capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        if exc.stdout:
+            print(exc.stdout)
+        if exc.stderr:
+            print(exc.stderr, file=sys.stderr)
+        raise
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(result.stdout, encoding="utf-8")
     if result.stderr:
@@ -91,4 +102,3 @@ def _require_files(paths: list[Path]) -> None:
 
 if __name__ == "__main__":
     main()
-

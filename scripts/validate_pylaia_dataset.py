@@ -49,7 +49,7 @@ def build_validate_command(args: argparse.Namespace) -> list[str]:
     command = [
         "pylaia-htr-dataset-validate",
         str(syms),
-        str(images),
+        _as_pylaia_list_arg(images),
         str(train_txt),
         str(val_txt),
         str(test_txt),
@@ -63,6 +63,10 @@ def build_validate_command(args: argparse.Namespace) -> list[str]:
     command.extend(args.extra_arg)
     statistics_output.parent.mkdir(parents=True, exist_ok=True)
     return command
+
+
+def _as_pylaia_list_arg(path: Path) -> str:
+    return f'["{path}"]'
 
 
 def main() -> None:
@@ -81,4 +85,3 @@ def _require_files(paths: list[Path]) -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -226,6 +226,8 @@ def _predict_command(
         str(dataset_dir),
         "--base-model-dir",
         str(model_dir),
+        "--checkpoint",
+        str(model_dir / "weights.ckpt"),
         "--split",
         split,
         "--batch-size",

@@ -52,7 +52,7 @@ def build_train_command(args: argparse.Namespace) -> list[str]:
     command = [
         "pylaia-htr-train-ctc",
         str(syms),
-        str(images),
+        _as_pylaia_list_arg(images),
         str(train_txt),
         str(val_txt),
         "--common.experiment_dirname",
@@ -82,6 +82,10 @@ def build_train_command(args: argparse.Namespace) -> list[str]:
     return command
 
 
+def _as_pylaia_list_arg(path: Path) -> str:
+    return f'["{path}"]'
+
+
 def main() -> None:
     args = parse_args()
     command = build_train_command(args)
@@ -98,4 +102,3 @@ def _require_files(paths: list[Path]) -> None:
 
 if __name__ == "__main__":
     main()
-
