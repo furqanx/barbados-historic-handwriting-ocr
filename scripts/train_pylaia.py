@@ -71,7 +71,7 @@ def build_train_command(args: argparse.Namespace) -> list[str]:
         str(args.batch_size),
         "--data.num_workers",
         str(args.num_workers),
-        "--optimizers.learning_rate",
+        "--optimizer.learning_rate",
         str(args.lr),
         "--trainer.max_epochs",
         str(args.epochs),
