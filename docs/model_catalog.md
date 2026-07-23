@@ -1,3 +1,7 @@
+# Model Catalog
+
+Dokumen ini merangkum pendekatan model yang pernah dipertimbangkan untuk kompetisi R.O.A.D. Barbados Historic Handwriting Challenge. Gunakan ini sebagai katalog strategi, bukan sebagai runbook eksekusi. Command eksekusi ada di `cloud_training.md` dan workflow-specific docs.
+
 ## Kesimpulan utama
 
 Untuk dataset hanya **±4.100 line images**, urutan eksperimen paling rasional adalah:
@@ -12,7 +16,7 @@ Alasan terbesarnya adalah bentuk gambar. Dengan aspect ratio median **16,8**, re
 
 ---
 
-# 1. CRNN + CTC
+## 1. CRNN + CTC
 
 | Model/arsitektur                        | Sumber/library/checkpoint                                                                    |   Cocok untuk handwritten line recognition | Kelebihan                                                                                                                                                                          | Kekurangan                                                                                                                        | Compute                                        | Kesulitan         | Prioritas                      |
 | --------------------------------------- | -------------------------------------------------------------------------------------------- | -----------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----------------- | ------------------------------ |
@@ -61,7 +65,7 @@ PyLaia menunjukkan bahwa character 6-gram language model dapat menurunkan CER da
 
 ---
 
-# 2. TrOCR / Vision Encoder–Decoder
+## 2. TrOCR / Vision Encoder–Decoder
 
 | Model/checkpoint                                   | Sumber                                                         |       Cocok untuk handwritten line recognition | Kelebihan                                                                                                                                                  | Kekurangan                                                                                                                                                       | Compute                                                           | Kesulitan         | Prioritas     |
 | -------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------- | ------------- |
@@ -118,7 +122,7 @@ Untuk Small, coba learning rate sekitar `1e-5` sampai `5e-5`. Untuk Base, mulai 
 
 ---
 
-# 3. Donut / OCR-free document model
+## 3. Donut / OCR-free document model
 
 | Model/checkpoint                                          | Sumber                                                        |             Cocok untuk handwritten line recognition | Kelebihan                                                                                           | Kekurangan                                                                                                                                                            | Compute                                  | Kesulitan         | Prioritas       |
 | --------------------------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------: | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------- | --------------- |
@@ -144,7 +148,7 @@ Saya hanya akan menjalankan Donut setelah CRNN dan TrOCR sudah stabil, sebagai k
 
 ---
 
-# 4. Pretrained OCR/HTR models dari Hugging Face atau library lain
+## 4. Pretrained OCR/HTR models dari Hugging Face atau library lain
 
 Bagian ini memang sedikit tumpang tindih dengan CRNN karena banyak model HTR historis pretrained memakai CNN-RNN-CTC.
 
@@ -166,7 +170,7 @@ CATMuS Medieval adalah Kraken HTR model untuk Old/Middle French, Latin, Spanish,
 
 ---
 
-# Ringkasan prioritas keseluruhan
+## Ringkasan prioritas keseluruhan
 
 | Urutan | Eksperimen                                              | Alasan                                                                               |
 | -----: | ------------------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -204,4 +208,3 @@ Secara praktis, kandidat final paling kuat kemungkinan bukan satu model tunggal,
 [8]: https://zenodo.org/records/12743230?utm_source=chatgpt.com "CATMuS Medieval"
 
 ---
-

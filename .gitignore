@@ -113,9 +113,5 @@ reports/*.pdf
 tmp/
 temp/
 *.tmp
-
-# notes.md
 .agents
 .codex
-# catalog.md
-# hyperparameter.md

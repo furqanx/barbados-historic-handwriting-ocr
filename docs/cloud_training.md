@@ -426,7 +426,7 @@ Use the Kaggle notebook file browser to confirm the exact folder name.
 
 ## PyLaia HTR experiment
 
-PyLaia uses an external HTR workflow. See `docs/pylaia_training.md` for the
+PyLaia uses an external HTR workflow. See `docs/pylaia_workflow.md` for the
 full sequence:
 
 ```text
@@ -439,7 +439,7 @@ environment for this branch of experiments.
 ## Kraken HTR experiment
 
 Kraken uses another external historical HTR workflow. See
-`docs/kraken_training.md` for the full sequence:
+`docs/kraken_workflow.md` for the full sequence:
 
 ```text
 prepare_kraken_dataset.py -> download_kraken_model.py -> train_kraken.py -> test_kraken.py -> predict_kraken.py -> convert_kraken_predictions.py
@@ -448,7 +448,7 @@ prepare_kraken_dataset.py -> download_kraken_model.py -> train_kraken.py -> test
 ## PaddleOCR recognition experiment
 
 PaddleOCR/SVTR/PP-OCR is a lower-priority external OCR recognizer workflow. See
-`docs/paddleocr_training.md` for the full sequence:
+`docs/paddleocr_workflow.md` for the full sequence:
 
 ```text
 prepare_paddleocr_dataset.py -> make_paddleocr_config.py -> train_paddleocr_rec.py -> eval_paddleocr_rec.py -> predict_paddleocr_rec.py -> convert_paddleocr_predictions.py
