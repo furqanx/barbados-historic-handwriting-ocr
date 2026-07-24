@@ -85,6 +85,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--precision", default="bf16-mixed")
+    parser.add_argument(
+        "--recognition-mode",
+        choices=["line", "segment"],
+        default="line",
+        help="Use `line` for pre-cropped line images. `segment` is much slower.",
+    )
+    parser.add_argument("--kraken-process-images", type=int, default=128)
+    parser.add_argument("--ocr-batch-size", type=int, default=64)
+    parser.add_argument("--num-line-workers", type=int, default=4)
     parser.add_argument("--max-images", type=int, default=100)
     parser.add_argument("--start-index", type=int, default=0)
     parser.add_argument("--reference-manifest", type=Path, default=TRAIN_MANIFEST)
@@ -297,7 +306,19 @@ def _predict_command(
         str(raw_dir),
         "--start-index",
         str(args.start_index),
+        "--recognition-mode",
+        args.recognition_mode,
+        "--kraken-process-images",
+        str(args.kraken_process_images),
+        "--ocr-batch-size",
+        str(args.ocr_batch_size),
+        "--num-line-workers",
+        str(args.num_line_workers),
     ]
+    if args.device:
+        command.extend(["--device", args.device])
+    if args.precision:
+        command.extend(["--precision", args.precision])
     if max_images is not None:
         command.extend(["--max-images", str(max_images)])
     for extra_arg in profile.extra_args:
